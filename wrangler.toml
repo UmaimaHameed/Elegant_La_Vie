@@ -12,7 +12,7 @@ compatibility_flags = []
 # ── D1 Database binding ─────────────────────────────────────────
 [[d1_databases]]
 binding      = "DB"                   # accessed as c.env.DB in worker
-database_name = "oud-essence-db"
+database_name = "elegant-la-vie-db"
 database_id  = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
 # Get this after: wrangler d1 create oud-essence-db
 
@@ -34,12 +34,12 @@ local_protocol = "http"
 
 # ── Production environment overrides ───────────────────────────
 [env.production]
-name = "oud-essence-api-prod"
+name = "elegant-la-vie"
 routes = [
-  { pattern = "api.oudessence.com/*", zone_name = "oudessence.com" }
+  { pattern = "elegant-la-vie.pages.com/*", zone_name = "elegant-la-vie.com" }
 ]
 
 [[env.production.d1_databases]]
 binding       = "DB"
-database_name = "oud-essence-db"
+database_name = "elegant-la-vie-db"
 database_id   = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
