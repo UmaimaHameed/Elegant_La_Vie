@@ -1,0 +1,45 @@
+# ================================================================
+# Oud & Essence — Cloudflare Wrangler Configuration
+# ================================================================
+name       = "oud-essence-api"
+main       = "worker.js"
+compatibility_date = "2024-09-23"
+
+# Node.js compatibility flag is NOT set — we rely only on
+# Web-standard APIs (fetch, crypto, URL, Headers, etc.)
+compatibility_flags = []
+
+# ── D1 Database binding ─────────────────────────────────────────
+[[d1_databases]]
+binding      = "DB"                   # accessed as c.env.DB in worker
+database_name = "oud-essence-db"
+database_id  = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+# Get this after: wrangler d1 create oud-essence-db
+
+# ── Secret environment variables ────────────────────────────────
+# Set these via CLI — never commit real values here:
+#   wrangler secret put JWT_SECRET
+#   wrangler secret put STRIPE_SECRET_KEY
+#   wrangler secret put STRIPE_WEBHOOK_SECRET
+#
+# For local dev, add to a .dev.vars file (gitignored):
+#   JWT_SECRET=your-local-secret-min-32-chars
+#   STRIPE_SECRET_KEY=sk_test_...
+#   STRIPE_WEBHOOK_SECRET=whsec_...
+
+# ── Local dev server settings ───────────────────────────────────
+[dev]
+port      = 8787
+local_protocol = "http"
+
+# ── Production environment overrides ───────────────────────────
+[env.production]
+name = "oud-essence-api-prod"
+routes = [
+  { pattern = "api.oudessence.com/*", zone_name = "oudessence.com" }
+]
+
+[[env.production.d1_databases]]
+binding       = "DB"
+database_name = "oud-essence-db"
+database_id   = "REPLACE_WITH_YOUR_D1_DATABASE_ID"

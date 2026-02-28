@@ -1,0 +1,264 @@
+<!-- ============================================================
+     Oud & Essence — Frontend API Integration
+     Add this <script> block just before </body> in your HTML.
+     Replace API_BASE with your deployed Worker URL.
+     ============================================================ -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+// ── Config ────────────────────────────────────────────────────
+const API_BASE = 'https://oud-essence-api.YOUR_SUBDOMAIN.workers.dev' // ← replace
+const STRIPE_PK = 'pk_test_REPLACE_WITH_YOUR_STRIPE_PUBLISHABLE_KEY'  // ← replace
+
+// ── State ─────────────────────────────────────────────────────
+const state = {
+  token: localStorage.getItem('oe_token'),
+  user:  JSON.parse(localStorage.getItem('oe_user') ?? 'null'),
+  cart:  JSON.parse(localStorage.getItem('oe_cart') ?? '[]'),
+  activeMood: null,
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+const api = async (path, options = {}) => {
+  const headers = { 'Content-Type': 'application/json', ...(options.headers ?? {}) }
+  if (state.token) headers['Authorization'] = `Bearer ${state.token}`
+  const res = await fetch(`${API_BASE}${path}`, { ...options, headers })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? 'API error')
+  return data
+}
+
+const toast = (msg, type = 'success') => {
+  const el = document.createElement('div')
+  el.textContent = msg
+  el.style.cssText = `
+    position:fixed;bottom:2rem;right:2rem;z-index:9999;
+    padding:.75rem 1.5rem;border-radius:.5rem;font-size:.875rem;font-weight:600;
+    background:${type === 'success' ? '#0fbd83' : '#ef4444'};color:#fff;
+    box-shadow:0 4px 20px rgba(0,0,0,.4);
+    animation:fadeIn .2s ease;
+  `
+  document.body.appendChild(el)
+  setTimeout(() => el.remove(), 3500)
+}
+
+// ── ① AUTHENTICATION ──────────────────────────────────────────
+const loginForm = document.querySelector('#login form')
+if (loginForm) {
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    // Read the Customer / Admin radio toggle
+    const roleInput = document.querySelector('input[name="user-type"]:checked')
+    const roleName  = roleInput?.parentElement?.querySelector('span')?.textContent?.trim()?.toLowerCase()
+    const role      = roleName === 'admin' ? 'admin' : 'customer'
+
+    const identity = loginForm.querySelector('input[type="email"]').value.trim()
+    const password = loginForm.querySelector('input[type="password"]').value
+
+    const btn = loginForm.querySelector('button[type="submit"]')
+    btn.textContent = 'Signing in…'
+    btn.disabled = true
+
+    try {
+      const { token, user } = await api('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ identity, password, role })
+      })
+
+      // Persist session
+      state.token = token
+      state.user  = user
+      localStorage.setItem('oe_token', token)
+      localStorage.setItem('oe_user',  JSON.stringify(user))
+
+      toast(`Welcome back, ${user.full_name ?? user.username}!`)
+
+      // Redirect to main experience
+      setTimeout(() => {
+        document.querySelector('#hero')?.scrollIntoView({ behavior: 'smooth' })
+      }, 800)
+    } catch (err) {
+      toast(err.message, 'error')
+    } finally {
+      btn.textContent = 'Sign In'
+      btn.disabled = false
+    }
+  })
+}
+
+// ── ② PRODUCT CARDS — replace static HTML with live D1 data ──
+const renderProducts = (products) => {
+  const grid = document.querySelector('#collections .grid')
+  if (!grid) return
+
+  const MOOD_COLOR = { mysterious: 'purple', floral: 'pink', fresh: 'sky', warm: 'amber' }
+
+  grid.innerHTML = products.map((p, i) => `
+    <div class="group bg-background-dark/50 border border-gold/20 rounded-xl overflow-hidden hover:shadow-xl transition-all ${i === 1 ? 'md:translate-y-8' : ''}"
+         data-product-id="${p.id}" data-product-slug="${p.slug}">
+      <div class="relative h-96 overflow-hidden">
+        <div class="absolute inset-0 bg-center bg-cover transition-transform duration-700 group-hover:scale-110"
+             style="background-image: url('${p.image_url ?? 'https://placehold.co/600x800/062e21/0fbd83?text=No+Image'}')">
+        </div>
+      </div>
+      <div class="p-8 text-center border-t border-gold/10">
+        <h4 class="font-display text-2xl font-bold mb-1">${p.name}</h4>
+        <p class="text-primary text-sm font-medium mb-1">${p.tagline ?? ''}</p>
+        <p class="text-slate-400 text-xs mb-2">${(p.scent_notes ?? []).join(' · ')}</p>
+        <p class="text-gold font-bold text-lg mb-6">$${p.price.toFixed(2)}</p>
+        <div class="flex gap-3">
+          <button
+            onclick="addToCart(${p.id}, '${p.name}', ${p.price})"
+            class="flex-1 py-3 bg-primary text-white hover:bg-primary-dark font-bold transition-all rounded-lg text-sm">
+            Add to Cart
+          </button>
+          <button
+            class="py-3 px-4 border border-primary text-primary hover:bg-primary hover:text-white font-bold transition-all rounded-lg text-sm">
+            Details
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('')
+}
+
+const loadProducts = async (mood = null) => {
+  try {
+    const url = mood ? `/api/products?mood=${mood}` : '/api/products'
+    const { products } = await api(url)
+    renderProducts(products)
+  } catch (err) {
+    console.error('Failed to load products:', err)
+  }
+}
+
+// Load on page ready
+loadProducts()
+
+// ── ③ SCENT QUIZ — filter products by mood ───────────────────
+document.querySelectorAll('.mood-card').forEach(card => {
+  card.addEventListener('click', () => {
+    // Map display text → API mood value
+    const label = card.querySelector('h3')?.textContent?.toLowerCase() ?? ''
+    let mood = null
+    if (label.includes('mysterious')) mood = 'mysterious'
+    else if (label.includes('floral'))     mood = 'floral'
+    else if (label.includes('fresh'))      mood = 'fresh'
+    else if (label.includes('warm'))       mood = 'warm'
+
+    // Toggle — click same card again to clear filter
+    if (state.activeMood === mood) {
+      state.activeMood = null
+      document.querySelectorAll('.mood-card').forEach(c => c.style.outline = '')
+      loadProducts()
+    } else {
+      state.activeMood = mood
+      document.querySelectorAll('.mood-card').forEach(c => c.style.outline = '')
+      card.style.outline = '3px solid #d4af37'
+      loadProducts(mood)
+      // Smoothly scroll to collections section
+      document.querySelector('#collections')?.scrollIntoView({ behavior: 'smooth' })
+    }
+  })
+})
+
+// ── ④ CART ───────────────────────────────────────────────────
+window.addToCart = (productId, name, price) => {
+  const existing = state.cart.find(i => i.product_id === productId)
+  if (existing) {
+    existing.quantity++
+  } else {
+    state.cart.push({ product_id: productId, name, price, quantity: 1 })
+  }
+  localStorage.setItem('oe_cart', JSON.stringify(state.cart))
+  updateCartBadge()
+  toast(`${name} added to cart`)
+}
+
+const updateCartBadge = () => {
+  const total = state.cart.reduce((sum, i) => sum + i.quantity, 0)
+  const badge = document.querySelector('button .bg-primary.rounded-full')
+  if (badge) {
+    badge.textContent = total > 0 ? total : ''
+    badge.style.display = total > 0 ? 'flex' : 'none'
+  }
+
+  // Update order summary subtotal
+  const subtotalEl = document.querySelector('#checkout .space-y-4 .flex:first-child span:last-child')
+  const totalEl    = document.querySelector('#checkout .space-y-4 .flex.text-xl span:last-child')
+  const subtotal   = state.cart.reduce((sum, i) => sum + i.price * i.quantity, 0)
+  if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`
+  if (totalEl)    totalEl.textContent    = `$${subtotal.toFixed(2)}`
+}
+
+updateCartBadge()
+
+// ── ⑤ CHECKOUT — gift options + Stripe ───────────────────────
+let selectedWrapping = 'none'
+
+// Gift wrapping selection
+document.querySelectorAll('#checkout .group.relative').forEach((card, idx) => {
+  card.addEventListener('click', () => {
+    selectedWrapping = idx === 0 ? 'emerald_box' : 'wooden_chest'
+    document.querySelectorAll('#checkout .border-2').forEach(el => {
+      el.classList.remove('border-primary')
+      el.classList.add('border-primary/20')
+    })
+    card.querySelector('.border-2')?.classList.replace('border-primary/20', 'border-primary')
+    toast(`Gift wrapping selected: ${selectedWrapping === 'emerald_box' ? 'Classic Emerald Box' : 'Artisan Wooden Chest'}`)
+  })
+})
+
+// Checkout button
+const checkoutBtn = document.querySelector('#checkout button.bg-primary')
+if (checkoutBtn) {
+  checkoutBtn.addEventListener('click', async () => {
+    if (!state.token) {
+      toast('Please sign in to checkout', 'error')
+      document.querySelector('#login')?.scrollIntoView({ behavior: 'smooth' })
+      return
+    }
+    if (!state.cart.length) {
+      toast('Your cart is empty', 'error')
+      return
+    }
+
+    const giftMessage = document.querySelector('#checkout textarea')?.value ?? ''
+    checkoutBtn.textContent = 'Processing…'
+    checkoutBtn.disabled    = true
+
+    try {
+      const { client_secret, order_id } = await api('/api/checkout', {
+        method: 'POST',
+        body: JSON.stringify({
+          items: state.cart.map(({ product_id, quantity }) => ({ product_id, quantity })),
+          gift_wrapping: selectedWrapping,
+          gift_message:  giftMessage,
+        })
+      })
+
+      // Confirm payment with Stripe.js
+      const stripe = Stripe(STRIPE_PK)
+      const { error, paymentIntent } = await stripe.confirmCardPayment(client_secret, {
+        payment_method: {
+          card: { /* In production, mount a Stripe CardElement here */ },
+        }
+      })
+
+      if (error) throw new Error(error.message)
+
+      // Clear cart on success
+      state.cart = []
+      localStorage.removeItem('oe_cart')
+      updateCartBadge()
+
+      toast(`Order #${order_id} confirmed! Thank you. 🎉`)
+    } catch (err) {
+      toast(err.message, 'error')
+    } finally {
+      checkoutBtn.textContent = 'Checkout'
+      checkoutBtn.disabled    = false
+    }
+  })
+}
+</script>
