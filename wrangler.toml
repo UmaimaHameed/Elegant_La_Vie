@@ -11,9 +11,9 @@ compatibility_flags = []
 
 # ── D1 Database binding ─────────────────────────────────────────
 [[d1_databases]]
-binding      = "DB"                   # accessed as c.env.DB in worker
+binding      = "elegant_la_vie_db"                   # accessed as c.env.DB in worker
 database_name = "elegant-la-vie-db"
-database_id  = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id  = "0a1d5290-c52e-4cdc-830b-5a4b890d5f0d"
 # Get this after: wrangler d1 create oud-essence-db
 
 # ── Secret environment variables ────────────────────────────────
@@ -40,6 +40,6 @@ routes = [
 ]
 
 [[env.production.d1_databases]]
-binding       = "DB"
+binding       = "elegant_la_vie_db"
 database_name = "elegant-la-vie-db"
-database_id   = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id   = "0a1d5290-c52e-4cdc-830b-5a4b890d5f0d"
