@@ -2,7 +2,7 @@
 # Oud & Essence — Cloudflare Wrangler Configuration
 # ================================================================
 name       = "oud-essence-api"
-main       = "worker.js"
+main       = "src/worker.js"
 compatibility_date = "2024-09-23"
 
 # Node.js compatibility flag is NOT set — we rely only on
