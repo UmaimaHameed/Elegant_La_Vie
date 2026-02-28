@@ -1,7 +1,7 @@
 # ================================================================
 # Oud & Essence — Cloudflare Wrangler Configuration
 # ================================================================
-name       = "oud-essence-api"
+name       = "elegant-la-vie"
 main       = "src/worker.js"
 compatibility_date = "2024-09-23"
 
