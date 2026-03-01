@@ -1,264 +1,506 @@
-<!-- ============================================================
-     Oud & Essence — Frontend API Integration
-     Add this <script> block just before </body> in your HTML.
-     Replace API_BASE with your deployed Worker URL.
-     ============================================================ -->
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-// ── Config ────────────────────────────────────────────────────
-const API_BASE = 'https://oud-essence-api.YOUR_SUBDOMAIN.workers.dev' // ← replace
-const STRIPE_PK = 'pk_test_REPLACE_WITH_YOUR_STRIPE_PUBLISHABLE_KEY'  // ← replace
+<!-- ================================================================
+     Elegant La Vie — Frontend JavaScript Integration
+     Pakistani Perfume Store | WhatsApp + COD Checkout
 
-// ── State ─────────────────────────────────────────────────────
+     HOW TO USE:
+       1. Replace API_BASE with your deployed Worker URL
+       2. Paste this entire <script> block just before </body>
+       3. Match your HTML element IDs to the ones in each section's
+          comment — or rename the querySelector targets to fit yours
+     ================================================================ -->
+<script>
+'use strict'
+
+// ── CONFIG ────────────────────────────────────────────────────────
+const API_BASE = 'https://elegant-la-vie-api.YOUR_SUBDOMAIN.workers.dev'
+//                ↑ Replace with your Worker URL after `wrangler deploy`
+
+// ── GLOBAL STATE ──────────────────────────────────────────────────
 const state = {
-  token: localStorage.getItem('oe_token'),
-  user:  JSON.parse(localStorage.getItem('oe_user') ?? 'null'),
-  cart:  JSON.parse(localStorage.getItem('oe_cart') ?? '[]'),
-  activeMood: null,
+  token: localStorage.getItem('elv_token'),
+  user:  JSON.parse(localStorage.getItem('elv_user')  ?? 'null'),
+  cart:  JSON.parse(localStorage.getItem('elv_cart')  ?? '[]'),
+  currentGender: null,   // 'male' | 'female' | null
 }
 
-// ── Helpers ───────────────────────────────────────────────────
-const api = async (path, options = {}) => {
+// ================================================================
+// CORE UTILITIES
+// ================================================================
+
+/** Authenticated fetch wrapper */
+async function api(path, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...(options.headers ?? {}) }
   if (state.token) headers['Authorization'] = `Bearer ${state.token}`
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers })
+  const res  = await fetch(`${API_BASE}${path}`, { ...options, headers })
   const data = await res.json()
-  if (!res.ok) throw new Error(data.error ?? 'API error')
+  if (!res.ok) throw new Error(data.error ?? 'Something went wrong')
   return data
 }
 
-const toast = (msg, type = 'success') => {
-  const el = document.createElement('div')
-  el.textContent = msg
-  el.style.cssText = `
-    position:fixed;bottom:2rem;right:2rem;z-index:9999;
-    padding:.75rem 1.5rem;border-radius:.5rem;font-size:.875rem;font-weight:600;
-    background:${type === 'success' ? '#0fbd83' : '#ef4444'};color:#fff;
-    box-shadow:0 4px 20px rgba(0,0,0,.4);
-    animation:fadeIn .2s ease;
-  `
+/** Toast notification — appears bottom-right */
+function toast(msg, type = 'success') {
+  document.getElementById('_elv_toast')?.remove()
+  const colours = { success: '#16a34a', error: '#dc2626', info: '#0284c7' }
+  const el = Object.assign(document.createElement('div'), {
+    id: '_elv_toast',
+    textContent: msg,
+  })
+  Object.assign(el.style, {
+    position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 99999,
+    padding: '.7rem 1.25rem', borderRadius: '.5rem',
+    fontSize: '.875rem', fontWeight: '600', maxWidth: '320px',
+    background: colours[type] ?? colours.success,
+    color: '#fff', boxShadow: '0 6px 24px rgba(0,0,0,.35)',
+  })
   document.body.appendChild(el)
   setTimeout(() => el.remove(), 3500)
 }
 
-// ── ① AUTHENTICATION ──────────────────────────────────────────
-const loginForm = document.querySelector('#login form')
+/** Format PKR — "Rs. 4,500" */
+const pkr = n => 'Rs. ' + Number(n).toLocaleString('en-PK', { maximumFractionDigits: 0 })
+
+// ================================================================
+// ① AUTHENTICATION
+// ================================================================
+//
+// Expected HTML IDs (rename targets below if yours differ):
+//   #login-form  or  #login form
+//   input[type="email"]  or  input[type="tel"]  — identity field
+//   input[type="password"]
+//   input[name="user-type"]  — radio toggle (Customer / Admin)
+//
+// The login endpoint accepts email OR username as "identity",
+// matching the original Oud & Essence worker contract.
+
+const loginForm = document.getElementById('login-form')
+               ?? document.querySelector('#login form')
+
 if (loginForm) {
-  loginForm.addEventListener('submit', async (e) => {
+  loginForm.addEventListener('submit', async e => {
     e.preventDefault()
 
-    // Read the Customer / Admin radio toggle
-    const roleInput = document.querySelector('input[name="user-type"]:checked')
-    const roleName  = roleInput?.parentElement?.querySelector('span')?.textContent?.trim()?.toLowerCase()
-    const role      = roleName === 'admin' ? 'admin' : 'customer'
+    // Detect role from radio toggle (works with both value attr and text content)
+    const radioEl   = document.querySelector('input[name="user-type"]:checked')
+    const roleText  = radioEl?.value?.toLowerCase()
+               ?? radioEl?.parentElement?.querySelector('span')?.textContent?.trim()?.toLowerCase()
+    const role      = roleText === 'admin' ? 'admin' : 'customer'
 
-    const identity = loginForm.querySelector('input[type="email"]').value.trim()
-    const password = loginForm.querySelector('input[type="password"]').value
+    // Identity — works whether you use email or phone input
+    const identityEl = loginForm.querySelector('input[type="email"]')
+                    ?? loginForm.querySelector('input[type="tel"]')
+    const identity   = identityEl?.value?.trim()
+    const password   = loginForm.querySelector('input[type="password"]')?.value
+
+    if (!identity || !password) { toast('Identity aur password darain', 'error'); return }
 
     const btn = loginForm.querySelector('button[type="submit"]')
-    btn.textContent = 'Signing in…'
-    btn.disabled = true
+    const origText = btn.textContent
+    btn.disabled = true; btn.textContent = 'Please wait...'
 
     try {
       const { token, user } = await api('/api/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ identity, password, role })
+        body: JSON.stringify({ identity, password, role }),
       })
 
-      // Persist session
-      state.token = token
-      state.user  = user
-      localStorage.setItem('oe_token', token)
-      localStorage.setItem('oe_user',  JSON.stringify(user))
+      state.token = token; state.user = user
+      localStorage.setItem('elv_token', token)
+      localStorage.setItem('elv_user',  JSON.stringify(user))
 
-      toast(`Welcome back, ${user.full_name ?? user.username}!`)
-
-      // Redirect to main experience
+      toast(`Khush amdeed, ${user.full_name ?? user.username}!`)
       setTimeout(() => {
-        document.querySelector('#hero')?.scrollIntoView({ behavior: 'smooth' })
-      }, 800)
+        ;(document.getElementById('hero')
+         ?? document.getElementById('products')
+         ?? document.getElementById('shop'))
+          ?.scrollIntoView({ behavior: 'smooth' })
+      }, 700)
     } catch (err) {
       toast(err.message, 'error')
     } finally {
-      btn.textContent = 'Sign In'
-      btn.disabled = false
+      btn.disabled = false; btn.textContent = origText
     }
   })
 }
 
-// ── ② PRODUCT CARDS — replace static HTML with live D1 data ──
-const renderProducts = (products) => {
-  const grid = document.querySelector('#collections .grid')
-  if (!grid) return
-
-  const MOOD_COLOR = { mysterious: 'purple', floral: 'pink', fresh: 'sky', warm: 'amber' }
-
-  grid.innerHTML = products.map((p, i) => `
-    <div class="group bg-background-dark/50 border border-gold/20 rounded-xl overflow-hidden hover:shadow-xl transition-all ${i === 1 ? 'md:translate-y-8' : ''}"
-         data-product-id="${p.id}" data-product-slug="${p.slug}">
-      <div class="relative h-96 overflow-hidden">
-        <div class="absolute inset-0 bg-center bg-cover transition-transform duration-700 group-hover:scale-110"
-             style="background-image: url('${p.image_url ?? 'https://placehold.co/600x800/062e21/0fbd83?text=No+Image'}')">
-        </div>
-      </div>
-      <div class="p-8 text-center border-t border-gold/10">
-        <h4 class="font-display text-2xl font-bold mb-1">${p.name}</h4>
-        <p class="text-primary text-sm font-medium mb-1">${p.tagline ?? ''}</p>
-        <p class="text-slate-400 text-xs mb-2">${(p.scent_notes ?? []).join(' · ')}</p>
-        <p class="text-gold font-bold text-lg mb-6">$${p.price.toFixed(2)}</p>
-        <div class="flex gap-3">
-          <button
-            onclick="addToCart(${p.id}, '${p.name}', ${p.price})"
-            class="flex-1 py-3 bg-primary text-white hover:bg-primary-dark font-bold transition-all rounded-lg text-sm">
-            Add to Cart
-          </button>
-          <button
-            class="py-3 px-4 border border-primary text-primary hover:bg-primary hover:text-white font-bold transition-all rounded-lg text-sm">
-            Details
-          </button>
-        </div>
-      </div>
-    </div>
-  `).join('')
+/** Call from a logout button: onclick="elvLogout()" */
+window.elvLogout = () => {
+  ['elv_token','elv_user'].forEach(k => localStorage.removeItem(k))
+  state.token = null; state.user = null
+  toast('Logout ho gaye', 'info')
 }
 
-const loadProducts = async (mood = null) => {
+// ================================================================
+// ② PRODUCT CARDS — load from D1 + render
+// ================================================================
+//
+// Expected HTML (any combination of these IDs):
+//   <div id="products-grid"></div>    ← all products
+//   <div id="male-grid"></div>        ← male only
+//   <div id="female-grid"></div>      ← female only
+//   <div id="featured-grid"></div>    ← featured only
+//
+// Gender filter buttons (add data-gender attr):
+//   <button data-gender="male">Mardana</button>
+//   <button data-gender="female">Zanana</button>
+
+function buildCardHTML(p) {
+  const price    = p.effective_price_pkr ?? p.price_pkr
+  const notes    = (p.scent_notes ?? []).slice(0, 4).join(' · ')
+  const imgSrc   = p.image_url ?? `https://placehold.co/400x500/1c1917/f5f5f4?text=${encodeURIComponent(p.name)}`
+  const safeName = p.name.replace(/'/g, "\\'")
+  const spec     = [p.concentration, p.volume_ml ? p.volume_ml + 'ml' : null].filter(Boolean).join(' · ')
+
+  return `
+    <div class="product-card" data-product-id="${p.id}" data-gender="${p.gender}"
+         style="position:relative">
+      <div style="overflow:hidden;position:relative">
+        <img src="${imgSrc}" alt="${p.name}" loading="lazy"
+             style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;transition:transform .5s">
+        ${p.on_sale ? `<span style="position:absolute;top:.6rem;left:.6rem;background:#dc2626;color:#fff;font-size:.65rem;font-weight:700;padding:.2rem .55rem;border-radius:.2rem;letter-spacing:.06em;text-transform:uppercase">SALE</span>` : ''}
+        ${!p.stock  ? `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);color:#fff;font-size:.8rem;font-weight:600">Out of Stock</span>` : ''}
+      </div>
+      <div style="padding:1rem 0 .5rem">
+        ${spec ? `<p style="margin:0 0 .2rem;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;opacity:.5">${spec}</p>` : ''}
+        <h3 style="margin:0 0 .2rem;font-size:1rem;font-weight:700">${p.name}</h3>
+        ${p.tagline ? `<p style="margin:0 0 .35rem;font-size:.8rem;opacity:.6;font-style:italic">${p.tagline}</p>` : ''}
+        ${notes     ? `<p style="margin:0 0 .6rem;font-size:.75rem;opacity:.45">${notes}</p>` : ''}
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem">
+          <span style="font-weight:700">${pkr(price)}</span>
+          ${p.on_sale ? `<span style="text-decoration:line-through;opacity:.45;font-size:.85rem">${pkr(p.price_pkr)}</span>` : ''}
+        </div>
+        <button
+          onclick="addToCart(${p.id},'${safeName}',${price})"
+          ${!p.stock ? 'disabled' : ''}
+          style="width:100%;padding:.55rem;font-size:.85rem;font-weight:600;
+                 cursor:${p.stock ? 'pointer' : 'not-allowed'};opacity:${p.stock ? 1 : .45};
+                 border:1px solid currentColor;border-radius:.375rem;
+                 background:transparent;transition:all .2s">
+          ${p.stock ? 'Cart Mein Darain' : 'Out of Stock'}
+        </button>
+      </div>
+    </div>`
+}
+
+async function loadProducts({ gender, featured, search, targetId } = {}) {
+  const grid = document.getElementById(targetId ?? 'products-grid')
+  if (!grid) return []
+
+  grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;opacity:.5">Loading...</div>`
+
   try {
-    const url = mood ? `/api/products?mood=${mood}` : '/api/products'
-    const { products } = await api(url)
-    renderProducts(products)
+    const params = new URLSearchParams()
+    if (gender)   params.set('gender', gender)
+    if (featured) params.set('featured', '1')
+    if (search)   params.set('search', search)
+
+    const { products } = await api(`/api/products${params.size ? '?' + params : ''}`)
+
+    if (!products.length) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;opacity:.5">Koi product nahi mila</div>`
+      return []
+    }
+
+    grid.innerHTML = products.map(buildCardHTML).join('')
+    return products
   } catch (err) {
-    console.error('Failed to load products:', err)
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#dc2626">${err.message}</div>`
+    return []
   }
 }
 
-// Load on page ready
-loadProducts()
+// Auto-load grids on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('products-grid')) loadProducts({ targetId: 'products-grid' })
+  if (document.getElementById('male-grid'))     loadProducts({ gender: 'male',   targetId: 'male-grid' })
+  if (document.getElementById('female-grid'))   loadProducts({ gender: 'female', targetId: 'female-grid' })
+  if (document.getElementById('featured-grid')) loadProducts({ featured: true,   targetId: 'featured-grid' })
+  updateCartUI()
+})
 
-// ── ③ SCENT QUIZ — filter products by mood ───────────────────
-document.querySelectorAll('.mood-card').forEach(card => {
-  card.addEventListener('click', () => {
-    // Map display text → API mood value
-    const label = card.querySelector('h3')?.textContent?.toLowerCase() ?? ''
-    let mood = null
-    if (label.includes('mysterious')) mood = 'mysterious'
-    else if (label.includes('floral'))     mood = 'floral'
-    else if (label.includes('fresh'))      mood = 'fresh'
-    else if (label.includes('warm'))       mood = 'warm'
-
-    // Toggle — click same card again to clear filter
-    if (state.activeMood === mood) {
-      state.activeMood = null
-      document.querySelectorAll('.mood-card').forEach(c => c.style.outline = '')
-      loadProducts()
+// Gender filter buttons: <button data-gender="male">Mardana</button>
+document.querySelectorAll('[data-gender]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const g = btn.dataset.gender
+    if (state.currentGender === g) {
+      // Toggle off → show all
+      state.currentGender = null
+      document.querySelectorAll('[data-gender]').forEach(b => b.classList.remove('active'))
+      loadProducts({ targetId: 'products-grid' })
     } else {
-      state.activeMood = mood
-      document.querySelectorAll('.mood-card').forEach(c => c.style.outline = '')
-      card.style.outline = '3px solid #d4af37'
-      loadProducts(mood)
-      // Smoothly scroll to collections section
-      document.querySelector('#collections')?.scrollIntoView({ behavior: 'smooth' })
+      state.currentGender = g
+      document.querySelectorAll('[data-gender]').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      loadProducts({ gender: g, targetId: 'products-grid' })
     }
   })
 })
 
-// ── ④ CART ───────────────────────────────────────────────────
+// ================================================================
+// ③ CART
+// ================================================================
+
 window.addToCart = (productId, name, price) => {
-  const existing = state.cart.find(i => i.product_id === productId)
-  if (existing) {
-    existing.quantity++
+  const item = state.cart.find(i => i.product_id === productId)
+  if (item) {
+    item.quantity = Math.min(item.quantity + 1, 10)
   } else {
     state.cart.push({ product_id: productId, name, price, quantity: 1 })
   }
-  localStorage.setItem('oe_cart', JSON.stringify(state.cart))
-  updateCartBadge()
-  toast(`${name} added to cart`)
+  localStorage.setItem('elv_cart', JSON.stringify(state.cart))
+  updateCartUI()
+  toast(`${name} cart mein add ho gaya ✓`)
 }
 
-const updateCartBadge = () => {
-  const total = state.cart.reduce((sum, i) => sum + i.quantity, 0)
-  const badge = document.querySelector('button .bg-primary.rounded-full')
-  if (badge) {
-    badge.textContent = total > 0 ? total : ''
-    badge.style.display = total > 0 ? 'flex' : 'none'
+window.removeFromCart = (productId) => {
+  state.cart = state.cart.filter(i => i.product_id !== productId)
+  localStorage.setItem('elv_cart', JSON.stringify(state.cart))
+  updateCartUI()
+}
+
+window.changeQty = (productId, delta) => {
+  const item = state.cart.find(i => i.product_id === productId)
+  if (!item) return
+  item.quantity = Math.max(0, Math.min(10, item.quantity + delta))
+  if (item.quantity === 0) return removeFromCart(productId)
+  localStorage.setItem('elv_cart', JSON.stringify(state.cart))
+  updateCartUI()
+}
+
+function cartTotals() {
+  const subtotal = state.cart.reduce((s, i) => s + i.price * i.quantity, 0)
+  const shipping  = subtotal >= 5000 ? 0 : 200
+  return { subtotal, shipping, total: subtotal + shipping }
+}
+
+function updateCartUI() {
+  const count = state.cart.reduce((s, i) => s + i.quantity, 0)
+  const { subtotal, shipping, total } = cartTotals()
+
+  // Badge — any element: #cart-count or .cart-count
+  document.querySelectorAll('#cart-count, .cart-count').forEach(el => {
+    el.textContent   = count
+    el.style.display = count > 0 ? '' : 'none'
+  })
+
+  // Summary text nodes
+  document.querySelectorAll('#cart-subtotal, .cart-subtotal').forEach(el => {
+    el.textContent = pkr(subtotal)
+  })
+  document.querySelectorAll('#cart-total, .cart-total').forEach(el => {
+    el.textContent = pkr(total)
+  })
+
+  // Cart item list — #cart-items or .cart-items
+  const listEl = document.getElementById('cart-items')
+              ?? document.querySelector('.cart-items')
+  if (!listEl) return
+
+  if (!state.cart.length) {
+    listEl.innerHTML = `<p style="text-align:center;padding:2rem;opacity:.5">Cart khali hai</p>`
+    return
   }
 
-  // Update order summary subtotal
-  const subtotalEl = document.querySelector('#checkout .space-y-4 .flex:first-child span:last-child')
-  const totalEl    = document.querySelector('#checkout .space-y-4 .flex.text-xl span:last-child')
-  const subtotal   = state.cart.reduce((sum, i) => sum + i.price * i.quantity, 0)
-  if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`
-  if (totalEl)    totalEl.textContent    = `$${subtotal.toFixed(2)}`
+  listEl.innerHTML = [
+    ...state.cart.map(item => `
+      <div style="display:flex;gap:1rem;padding:.85rem 0;border-bottom:1px solid rgba(128,128,128,.15)">
+        <div style="flex:1;min-width:0">
+          <p style="margin:0 0 .2rem;font-weight:600;font-size:.9rem">${item.name}</p>
+          <p style="margin:0;font-size:.78rem;opacity:.5">${pkr(item.price)} each</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:.4rem">
+          <button onclick="changeQty(${item.product_id},-1)"
+                  style="width:1.6rem;height:1.6rem;border-radius:50%;border:1px solid #6b7280;background:transparent;cursor:pointer;font-size:.9rem">−</button>
+          <span style="min-width:1.25rem;text-align:center;font-size:.9rem">${item.quantity}</span>
+          <button onclick="changeQty(${item.product_id},+1)"
+                  style="width:1.6rem;height:1.6rem;border-radius:50%;border:1px solid #6b7280;background:transparent;cursor:pointer;font-size:.9rem">+</button>
+        </div>
+        <div style="text-align:right;min-width:4.5rem">
+          <p style="margin:0 0 .15rem;font-weight:700;font-size:.9rem">${pkr(item.price * item.quantity)}</p>
+          <button onclick="removeFromCart(${item.product_id})"
+                  style="font-size:.68rem;color:#ef4444;background:none;border:none;cursor:pointer;padding:0">Hatayen</button>
+        </div>
+      </div>`),
+
+    `<div style="padding:.85rem 0">
+       <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.875rem">
+         <span style="opacity:.6">Subtotal</span><span>${pkr(subtotal)}</span>
+       </div>
+       <div style="display:flex;justify-content:space-between;margin-bottom:.75rem;font-size:.875rem">
+         <span style="opacity:.6">Delivery</span>
+         <span>${shipping === 0 ? '<span style="color:#16a34a">FREE ✅</span>' : pkr(shipping)}</span>
+       </div>
+       ${shipping > 0 ? `<p style="font-size:.72rem;opacity:.45;margin:0 0 .65rem">Rs. 5,000 se upar free delivery!</p>` : ''}
+       <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1rem;border-top:1px solid rgba(128,128,128,.2);padding-top:.65rem">
+         <span>Total</span><span>${pkr(total)}</span>
+       </div>
+     </div>`,
+  ].join('')
 }
 
-updateCartBadge()
+// ================================================================
+// ④ WHATSAPP CHECKOUT
+// ================================================================
+//
+// Expected HTML for the checkout form:
+//   <form id="checkout-form">
+//     <input id="checkout-name"    placeholder="Aapka naam" />
+//     <input id="checkout-phone"   type="tel" placeholder="Phone number" />
+//     <input id="checkout-city"    placeholder="Sheher" />
+//     <input id="checkout-address" placeholder="Address" />
+//     <select id="checkout-payment">
+//       <option value="cod">Cash on Delivery</option>
+//       <option value="easypaisa">EasyPaisa</option>
+//       <option value="jazzcash">JazzCash</option>
+//     </select>
+//     <textarea id="checkout-notes"></textarea>
+//     <button type="submit" id="checkout-btn">Order via WhatsApp</button>
+//   </form>
 
-// ── ⑤ CHECKOUT — gift options + Stripe ───────────────────────
-let selectedWrapping = 'none'
+const checkoutForm = document.getElementById('checkout-form')
+                  ?? document.querySelector('#checkout form')
 
-// Gift wrapping selection
-document.querySelectorAll('#checkout .group.relative').forEach((card, idx) => {
-  card.addEventListener('click', () => {
-    selectedWrapping = idx === 0 ? 'emerald_box' : 'wooden_chest'
-    document.querySelectorAll('#checkout .border-2').forEach(el => {
-      el.classList.remove('border-primary')
-      el.classList.add('border-primary/20')
-    })
-    card.querySelector('.border-2')?.classList.replace('border-primary/20', 'border-primary')
-    toast(`Gift wrapping selected: ${selectedWrapping === 'emerald_box' ? 'Classic Emerald Box' : 'Artisan Wooden Chest'}`)
-  })
-})
+if (checkoutForm) {
+  checkoutForm.addEventListener('submit', async e => {
+    e.preventDefault()
+    if (!state.cart.length) { toast('Cart khali hai', 'error'); return }
 
-// Checkout button
-const checkoutBtn = document.querySelector('#checkout button.bg-primary')
-if (checkoutBtn) {
-  checkoutBtn.addEventListener('click', async () => {
-    if (!state.token) {
-      toast('Please sign in to checkout', 'error')
-      document.querySelector('#login')?.scrollIntoView({ behavior: 'smooth' })
-      return
-    }
-    if (!state.cart.length) {
-      toast('Your cart is empty', 'error')
-      return
-    }
+    // Flexible field resolution — tries IDs first, then common selectors
+    const fv = (id, fallback) =>
+      (document.getElementById(id) ?? checkoutForm.querySelector(fallback))?.value?.trim() ?? ''
 
-    const giftMessage = document.querySelector('#checkout textarea')?.value ?? ''
-    checkoutBtn.textContent = 'Processing…'
-    checkoutBtn.disabled    = true
+    const customer_name    = fv('checkout-name',    '[name="name"],[placeholder*="naam"],[placeholder*="name"]')
+    const customer_phone   = fv('checkout-phone',   '[name="phone"],[type="tel"]')
+    const customer_city    = fv('checkout-city',    '[name="city"],[placeholder*="sheher"],[placeholder*="city"]')
+    const customer_address = fv('checkout-address', '[name="address"],[placeholder*="address"],[placeholder*="Address"]')
+    const payment_method   = fv('checkout-payment', 'select,[name="payment"]') || 'cod'
+    const notes            = fv('checkout-notes',   'textarea')
+
+    if (!customer_name)    { toast('Naam darain',            'error'); return }
+    if (!customer_phone)   { toast('Phone number darain',    'error'); return }
+    if (!customer_city)    { toast('Sheher ka naam darain',  'error'); return }
+    if (!customer_address) { toast('Apna address darain',    'error'); return }
+
+    const btn      = document.getElementById('checkout-btn') ?? checkoutForm.querySelector('[type="submit"]')
+    const origHTML = btn.innerHTML
+    btn.disabled   = true; btn.textContent = 'Order tayyar ho raha hai...'
 
     try {
-      const { client_secret, order_id } = await api('/api/checkout', {
+      const result = await api('/api/checkout', {
         method: 'POST',
         body: JSON.stringify({
+          customer_name, customer_phone, customer_city, customer_address,
+          payment_method, notes,
           items: state.cart.map(({ product_id, quantity }) => ({ product_id, quantity })),
-          gift_wrapping: selectedWrapping,
-          gift_message:  giftMessage,
-        })
+        }),
       })
 
-      // Confirm payment with Stripe.js
-      const stripe = Stripe(STRIPE_PK)
-      const { error, paymentIntent } = await stripe.confirmCardPayment(client_secret, {
-        payment_method: {
-          card: { /* In production, mount a Stripe CardElement here */ },
-        }
-      })
-
-      if (error) throw new Error(error.message)
-
-      // Clear cart on success
-      state.cart = []
-      localStorage.removeItem('oe_cart')
-      updateCartBadge()
-
-      toast(`Order #${order_id} confirmed! Thank you. 🎉`)
+      openOrderModal(result, btn, origHTML)
     } catch (err) {
       toast(err.message, 'error')
-    } finally {
-      checkoutBtn.textContent = 'Checkout'
-      checkoutBtn.disabled    = false
+      btn.disabled  = false
+      btn.innerHTML = origHTML
     }
   })
 }
+
+// ── WhatsApp Order Confirmation Modal ─────────────────────────────
+function openOrderModal(result, submitBtn, origBtnHTML) {
+  const { order_id, whatsapp_url, summary } = result
+  const { items, subtotal_pkr, shipping_pkr, total_pkr, free_shipping } = summary
+
+  document.getElementById('_elv_modal')?.remove()
+
+  const rows = items.map(i =>
+    `<tr>
+       <td style="padding:.35rem .6rem">${i.product_name}</td>
+       <td style="padding:.35rem .6rem;text-align:center">×${i.quantity}</td>
+       <td style="padding:.35rem .6rem;text-align:right;white-space:nowrap">${pkr(i.line_total_pkr)}</td>
+     </tr>`
+  ).join('')
+
+  const overlay = document.createElement('div')
+  overlay.id = '_elv_modal'
+  overlay.style.cssText = `position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);padding:1rem`
+
+  overlay.innerHTML = `
+    <div style="background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:1rem;padding:1.75rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.8)">
+
+      <div style="text-align:center;margin-bottom:1.25rem">
+        <div style="font-size:2.25rem;line-height:1;margin-bottom:.5rem">✅</div>
+        <h3 style="margin:0 0 .3rem;font-size:1.15rem;font-weight:700">Order #${order_id} Tayyar!</h3>
+        <p style="margin:0;font-size:.82rem;opacity:.55">Neeche green button dabayein — WhatsApp khul jayega</p>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;font-size:.83rem;margin-bottom:1rem">
+        <thead>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.1)">
+            <th style="padding:.35rem .6rem;text-align:left;opacity:.5;font-weight:500">Item</th>
+            <th style="padding:.35rem .6rem;text-align:center;opacity:.5;font-weight:500">Qty</th>
+            <th style="padding:.35rem .6rem;text-align:right;opacity:.5;font-weight:500">Total</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr style="border-top:1px solid rgba(255,255,255,.06)">
+            <td colspan="2" style="padding:.35rem .6rem;opacity:.5">Delivery</td>
+            <td style="padding:.35rem .6rem;text-align:right;color:${free_shipping ? '#4ade80' : 'inherit'}">
+              ${free_shipping ? 'FREE ✅' : pkr(shipping_pkr)}
+            </td>
+          </tr>
+          <tr style="border-top:1px solid rgba(255,255,255,.15)">
+            <td colspan="2" style="padding:.5rem .6rem;font-weight:700">Total</td>
+            <td style="padding:.5rem .6rem;text-align:right;font-weight:700;font-size:1rem">${pkr(total_pkr)}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:.5rem;padding:.7rem .85rem;margin-bottom:1.15rem;font-size:.78rem;color:#86efac;line-height:1.5">
+        💡 <strong>Ek click mein:</strong> Green button dabayein → WhatsApp khulega → message pehle se likha hoga → bas <strong>Send</strong> dabayein
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:.65rem">
+        <a id="_elv_wa_btn" href="${whatsapp_url}" target="_blank" rel="noopener"
+           style="display:flex;align-items:center;justify-content:center;gap:.55rem;padding:.9rem;background:#25D366;border-radius:.5rem;color:#fff;font-weight:700;text-decoration:none;font-size:.95rem;box-shadow:0 4px 18px rgba(37,211,102,.35)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width:1.15rem;height:1.15rem;flex-shrink:0">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.553 4.116 1.522 5.847L.057 23.882a.5.5 0 00.61.61l6.035-1.465A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.875 9.875 0 01-5.031-1.377l-.36-.214-3.733.906.922-3.658-.234-.374A9.865 9.865 0 012.106 12C2.106 6.58 6.58 2.106 12 2.106S21.894 6.58 21.894 12 17.42 21.894 12 21.894z"/>
+          </svg>
+          WhatsApp Par Order Bhejain
+        </a>
+        <button id="_elv_modal_close"
+                style="padding:.75rem;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:.5rem;color:#9ca3af;cursor:pointer;font-size:.83rem">
+          Wapas Jain — Order Cancel
+        </button>
+      </div>
+    </div>`
+
+  document.body.appendChild(overlay)
+  document.body.style.overflow = 'hidden'
+
+  const close = () => {
+    overlay.remove()
+    document.body.style.overflow = ''
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = origBtnHTML }
+  }
+
+  // After WA link tapped → clear cart + close
+  document.getElementById('_elv_wa_btn').addEventListener('click', () => {
+    setTimeout(() => {
+      state.cart = []
+      localStorage.removeItem('elv_cart')
+      updateCartUI()
+      close()
+      toast(`Order #${order_id} WhatsApp par bhej diya! 🎉`)
+    }, 600)
+  })
+
+  document.getElementById('_elv_modal_close').addEventListener('click', close)
+  overlay.addEventListener('click', e => { if (e.target === overlay) close() })
+}
+
+// ── Expose helpers for custom integrations ─────────────────────
+window.elvApi          = api
+window.elvLoadProducts = loadProducts
+window.elvState        = state
+window.elvCartTotals   = cartTotals
 </script>
