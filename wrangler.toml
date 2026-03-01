@@ -1,45 +1,61 @@
 # ================================================================
-# Oud & Essence — Cloudflare Wrangler Configuration
+# Elegant La Vie — Wrangler Configuration
+# Pakistani Perfume Store | Cloudflare Workers + D1
 # ================================================================
-name       = "elegant-la-vie"
-main       = "src/worker.js"
+
+name               = "elegant-la-vie-api"
+main               = "src/worker.js"
 compatibility_date = "2024-09-23"
 
-# Node.js compatibility flag is NOT set — we rely only on
-# Web-standard APIs (fetch, crypto, URL, Headers, etc.)
-compatibility_flags = []
+# No Node.js compat flag — we only use Web-standard APIs
+# (fetch, crypto.subtle, URL, TextEncoder — all native on Cloudflare Edge)
 
-# ── D1 Database binding ─────────────────────────────────────────
+# ── D1 Database ──────────────────────────────────────────────────
 [[d1_databases]]
-binding      = "elegant_la_vie_db"                   # accessed as c.env.DB in worker
-database_name = "elegant-la-vie-db"
-database_id  = "0a1d5290-c52e-4cdc-830b-5a4b890d5f0d"
-# Get this after: wrangler d1 create oud-essence-db
+binding       = "DB"                   # c.env.DB inside worker.js
+database_name = "elegant-la-vie-db"   # exact name used in wrangler d1 create
+database_id   = "PASTE_YOUR_D1_ID_HERE"
+# ↑ Run: wrangler d1 create elegant-la-vie-db
+#   Copy the database_id from the output and paste it above.
 
-# ── Secret environment variables ────────────────────────────────
-# Set these via CLI — never commit real values here:
-#   wrangler secret put JWT_SECRET
-#   wrangler secret put STRIPE_SECRET_KEY
-#   wrangler secret put STRIPE_WEBHOOK_SECRET
+# ── Non-secret environment variables ─────────────────────────────
+[vars]
+STORE_NAME = "Elegant La Vie"
+
+# ── Secrets (NEVER commit real values — set via CLI) ─────────────
 #
-# For local dev, add to a .dev.vars file (gitignored):
-#   JWT_SECRET=your-local-secret-min-32-chars
-#   STRIPE_SECRET_KEY=sk_test_...
-#   STRIPE_WEBHOOK_SECRET=whsec_...
+#   wrangler secret put JWT_SECRET
+#   → Paste a random 40+ char string (openssl rand -hex 32)
+#
+#   wrangler secret put WHATSAPP_NUMBER
+#   → Your WhatsApp Business number WITHOUT + or spaces
+#   → Example: 923001234567   for   +92 300 1234567
+#
 
-# ── Local dev server settings ───────────────────────────────────
+# ── Local development ─────────────────────────────────────────────
 [dev]
-port      = 8787
+port           = 8787
 local_protocol = "http"
 
-# ── Production environment overrides ───────────────────────────
+# Create .dev.vars in your project root (add to .gitignore):
+# ┌────────────────────────────────────────────────────────────────
+# │ JWT_SECRET=any-local-dev-string-at-least-32-chars
+# │ WHATSAPP_NUMBER=923001234567
+# │ STORE_NAME=Elegant La Vie
+# └────────────────────────────────────────────────────────────────
+
+# ── Production environment override ──────────────────────────────
 [env.production]
-name = "elegant-la-vie"
-routes = [
-  { pattern = "elegant-la-vie.pages.com/*", zone_name = "elegant-la-vie.com" }
-]
+name = "elegant-la-vie-api-prod"
 
 [[env.production.d1_databases]]
-binding       = "elegant_la_vie_db"
+binding       = "DB"
 database_name = "elegant-la-vie-db"
-database_id   = "0a1d5290-c52e-4cdc-830b-5a4b890d5f0d"
+database_id   = "PASTE_YOUR_D1_ID_HERE"
+
+# ── Optional: custom domain routing ──────────────────────────────
+# Uncomment once you have a domain pointed at Cloudflare:
+#
+# routes = [
+#   { pattern = "api.elegantlavie.pk/*", zone_name = "elegantlavie.pk" }
+# ]
