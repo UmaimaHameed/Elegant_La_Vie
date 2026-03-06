@@ -1,0 +1,21 @@
+name = "elegant-la-vie"
+main = "src/worker.js"
+compatibility_date = "2024-05-01"           # یہ ٹھیک ہے (یا نئی تاریخ جیسے 2026-03-06 ڈال سکتے ہو)
+compatibility_flags = ["nodejs_compat"]     # ٹھیک ہے اگر تمہیں compat چاہیے
+
+[vars]
+STRIPE_PUBLIC_KEY = "pk_test_your_stripe_public_key_here"   # یہ public ہے تو رکھو، ورنہ ہٹا دو
+FRONTEND_URL = "https://elegant-la-vie.pages.dev"           # Pages deploy کے بعد درست URL سے تبدیل کرنا
+
+# JWT_SECRET اور STRIPE_SECRET_KEY کو یہاں نہ رکھو — secret put سے سیٹ کرو (سیکیورٹی کے لیے)
+
+[[d1_databases]]
+binding = "DB"
+database_name = "perfume-store"
+database_id = "52da45bf-c7b8-4f41-aa22-e1440ae2c1f5"                                    # "auto" کی جگہ خالی (بعد میں create کے بعد ID ڈالیں گے)
+
+# یہ دونوں سیکشنز مکمل ہٹا دو — یہ wrangler.toml میں valid نہیں ہیں (Pages کے لیے dashboard یا wrangler pages deploy میں set ہوتے ہیں)
+# [build]
+# command = ""
+# [[pages_build_output_dir]]
+# output_dir = "public"

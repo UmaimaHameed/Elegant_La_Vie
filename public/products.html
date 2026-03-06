@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collection — Elegant La Vie</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root { --emerald-deep:#0a1f1a; --emerald-dark:#0d2b24; --emerald-mid:#144d3f; --gold:#c9a84c; --gold-light:#e2c47e; --gold-dim:#8a6f2e; --cream:#f5f0e8; --glass:rgba(255,255,255,0.04); --glass-border:rgba(201,168,76,0.2); }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--emerald-deep); color:var(--cream); font-family:'Montserrat',sans-serif; overflow-x:hidden; }
+.font-display { font-family:'Cinzel',serif; }
+.font-serif { font-family:'Cormorant Garamond',serif; }
+.gold-text { background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dim)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.glass-card { background:var(--glass); border:1px solid var(--glass-border); backdrop-filter:blur(20px); }
+.gold-line { height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+.btn-gold { background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light),var(--gold)); background-size:200% auto; color:var(--emerald-deep); font-family:'Cinzel',serif; letter-spacing:.15em; font-weight:600; transition:background-position .4s,transform .2s,box-shadow .3s; }
+.btn-gold:hover { background-position:right center; transform:translateY(-2px); box-shadow:0 10px 30px rgba(201,168,76,.4); }
+.product-card { transition:transform .4s cubic-bezier(.25,.46,.45,.94),box-shadow .4s; position:relative; overflow:hidden; cursor:pointer; }
+.product-card:hover { transform:translateY(-8px); box-shadow:0 30px 60px rgba(0,0,0,.5),0 0 40px rgba(201,168,76,.1); }
+.product-card img { transition:transform .6s ease; }
+.product-card:hover img { transform:scale(1.05); }
+.mood-badge { font-family:'Cinzel',serif; font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; padding:4px 12px; border-radius:20px; border:1px solid var(--gold-dim); color:var(--gold-light); background:rgba(201,168,76,.08); }
+.filter-btn { font-family:'Cinzel',serif; font-size:.65rem; letter-spacing:.2em; padding:8px 20px; border-radius:24px; border:1px solid rgba(201,168,76,.3); color:rgba(201,168,76,.7); background:transparent; cursor:pointer; transition:all .3s; }
+.filter-btn:hover, .filter-btn.active { border-color:var(--gold); color:var(--gold-light); background:rgba(201,168,76,.1); }
+.navbar { position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(10,31,26,.95); backdrop-filter:blur(20px); border-bottom:1px solid rgba(201,168,76,.15); }
+.skeleton { background:linear-gradient(90deg,rgba(255,255,255,.05) 25%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.05) 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:8px; }
+@keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+.cart-badge { position:absolute; top:-6px; right:-6px; background:var(--gold); color:var(--emerald-deep); width:18px; height:18px; border-radius:50%; font-size:.65rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:var(--emerald-deep); } ::-webkit-scrollbar-thumb { background:var(--gold-dim); border-radius:3px; }
+</style>
+</head>
+<body>
+<nav class="navbar px-6 py-5">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="font-display text-xl tracking-[0.3em] gold-text">ELEGANT LA VIE</a>
+    <div class="hidden md:flex items-center gap-8 text-xs tracking-[0.2em] uppercase font-light">
+      <a href="index.html" class="hover:text-yellow-300 transition-colors">Home</a>
+      <a href="products.html" class="text-yellow-400">Collection</a>
+      <a href="quiz.html" class="hover:text-yellow-300 transition-colors">Scent Quiz</a>
+    </div>
+    <div class="flex items-center gap-5">
+      <a href="cart.html" class="relative hover:opacity-80 transition-opacity">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <span class="cart-badge" id="cart-count">0</span>
+      </a>
+      <a href="login.html" id="auth-link" class="text-xs tracking-[0.2em] uppercase hover:text-yellow-300 transition-colors">Login</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<div class="pt-32 pb-16 px-6 text-center relative">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse 60% 80% at 50% 0%, rgba(26,107,84,0.15) 0%, transparent 60%);"></div>
+  <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-4 relative z-10">✦ OUR MAISON ✦</p>
+  <h1 class="font-display text-5xl md:text-7xl gold-text mb-4 relative z-10">The Collection</h1>
+  <div class="gold-line w-24 mx-auto my-6"></div>
+  <p class="font-serif text-gray-400 text-lg italic relative z-10 max-w-md mx-auto">Discover fragrances crafted for every mood and occasion</p>
+</div>
+
+<!-- Filters -->
+<div class="px-6 mb-12">
+  <div class="max-w-7xl mx-auto flex flex-wrap justify-center gap-3">
+    <button class="filter-btn active" onclick="filterProducts('all', this)">ALL</button>
+    <button class="filter-btn" onclick="filterProducts('Mysterious', this)">🌙 MYSTERIOUS</button>
+    <button class="filter-btn" onclick="filterProducts('Floral', this)">🌹 FLORAL</button>
+    <button class="filter-btn" onclick="filterProducts('Fresh', this)">🌊 FRESH</button>
+    <button class="filter-btn" onclick="filterProducts('Warm', this)">🕯️ WARM</button>
+  </div>
+</div>
+
+<!-- Products Grid -->
+<section class="px-6 pb-32 relative z-10">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="products-grid">
+      <div class="skeleton h-96"></div>
+      <div class="skeleton h-96"></div>
+      <div class="skeleton h-96"></div>
+      <div class="skeleton h-96"></div>
+      <div class="skeleton h-96"></div>
+      <div class="skeleton h-96"></div>
+      <div class="skeleton h-96"></div>
+      <div class="skeleton h-96"></div>
+    </div>
+    <p class="text-center font-serif text-gray-500 italic mt-8 hidden" id="no-products">No fragrances found for this mood.</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="border-t py-10 px-6 relative z-10 text-center" style="border-color:rgba(201,168,76,0.15); background:rgba(5,15,12,0.8);">
+  <h3 class="font-display text-xl tracking-[0.3em] gold-text mb-3">ELEGANT LA VIE</h3>
+  <p class="text-xs text-gray-600 font-light">📞 03008206118 &nbsp;|&nbsp; 💬 WhatsApp: 03008206118</p>
+  <p class="text-xs text-gray-700 mt-3">© 2024 Elegant La Vie. All rights reserved.</p>
+</footer>
+
+<script>
+const API_BASE = '/api';
+let allProducts = [];
+
+function getCart() { try { return JSON.parse(localStorage.getItem('elv_cart') || '[]'); } catch { return []; } }
+function saveCart(cart) { localStorage.setItem('elv_cart', JSON.stringify(cart)); }
+function updateCartCount() { document.getElementById('cart-count').textContent = getCart().reduce((s, i) => s + i.quantity, 0); }
+
+const token = localStorage.getItem('elv_token');
+if (token) {
+  const user = JSON.parse(localStorage.getItem('elv_user') || '{}');
+  document.getElementById('auth-link').textContent = user.name?.split(' ')[0] || 'Account';
+  document.getElementById('auth-link').href = user.role === 'admin' ? 'admin.html' : '#';
+}
+
+function renderProducts(products) {
+  const grid = document.getElementById('products-grid');
+  const noProds = document.getElementById('no-products');
+  if (!products.length) {
+    grid.innerHTML = '';
+    noProds.classList.remove('hidden');
+    return;
+  }
+  noProds.classList.add('hidden');
+  grid.innerHTML = products.map(p => `
+    <div class="product-card glass-card rounded-xl overflow-hidden" onclick="location.href='product.html?id=${p.id}'">
+      <div class="aspect-square overflow-hidden bg-emerald-950">
+        <img src="${p.image || 'https://images.unsplash.com/photo-1541643600914-78b084683702?w=400'}" 
+             alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+      </div>
+      <div class="p-5">
+        <div class="flex justify-between items-start mb-3">
+          <span class="mood-badge">${p.scent_mood}</span>
+          ${p.featured ? '<span class="text-yellow-500 text-xs font-display tracking-wider">✦ FEATURED</span>' : ''}
+        </div>
+        <h3 class="font-display text-lg gold-text mb-1">${p.name}</h3>
+        <p class="font-serif text-xs text-gray-500 italic mb-2 line-clamp-2">${p.description || ''}</p>
+        <p class="text-xs text-gray-600 mb-3">${(p.scent_notes || '').split(',').map(n => `<span style="display:inline-block;padding:2px 8px;margin:1px;border-radius:10px;background:rgba(26,107,84,0.3);border:1px solid rgba(26,107,84,0.5);font-size:0.65rem;">${n.trim()}</span>`).join('')}</p>
+        <div class="flex justify-between items-center mt-3">
+          <span class="font-display text-xl gold-text">$${p.price}</span>
+          <button onclick="event.stopPropagation(); addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')})" 
+                  class="btn-gold px-4 py-2 text-xs tracking-widest rounded-lg">ADD</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function filterProducts(mood, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  if (mood === 'all') {
+    renderProducts(allProducts);
+  } else {
+    const filtered = allProducts.filter(p => p.scent_mood === mood);
+    renderProducts(filtered);
+  }
+}
+
+async function loadProducts() {
+  try {
+    const res = await fetch(`${API_BASE}/products`);
+    const data = await res.json();
+    allProducts = data.products || [];
+    renderProducts(allProducts);
+    
+    // Check URL for mood filter
+    const urlMood = new URLSearchParams(window.location.search).get('mood');
+    if (urlMood) {
+      const btn = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.textContent.includes(urlMood.toUpperCase()));
+      if (btn) filterProducts(urlMood, btn);
+    }
+  } catch(err) {
+    document.getElementById('products-grid').innerHTML = '<p class="col-span-4 text-center text-gray-500 font-serif italic py-12">Unable to load products. Ensure the Worker API is deployed.</p>';
+  }
+}
+
+function addToCart(product) {
+  const cart = getCart();
+  const existing = cart.find(i => i.id === product.id);
+  if (existing) existing.quantity++;
+  else cart.push({ ...product, quantity: 1 });
+  saveCart(cart);
+  updateCartCount();
+  showToast(`${product.name} added to cart ✦`);
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.4);padding:14px 24px;border-radius:12px;font-size:14px;font-family:"Cormorant Garamond",serif;font-style:italic;color:#e2c47e;backdrop-filter:blur(20px);';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+updateCartCount();
+loadProducts();
+</script>
+</body>
+</html>

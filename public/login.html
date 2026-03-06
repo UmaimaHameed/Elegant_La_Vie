@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — Elegant La Vie</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--emerald-deep:#0a1f1a;--gold:#c9a84c;--gold-light:#e2c47e;--gold-dim:#8a6f2e;--cream:#f5f0e8;--glass:rgba(255,255,255,0.04);--glass-border:rgba(201,168,76,0.2);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+.font-display{font-family:'Cinzel',serif;}.font-serif{font-family:'Cormorant Garamond',serif;}
+.gold-text{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.glass-card{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);}
+.gold-line{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light),var(--gold));background-size:200% auto;color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.15em;font-weight:600;transition:all .3s;}
+.btn-gold:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 10px 30px rgba(201,168,76,.4);}
+.input-field{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);color:var(--cream);transition:border-color .3s;outline:none;}
+.input-field:focus{border-color:rgba(201,168,76,0.6);}
+.input-field::placeholder{color:rgba(245,240,232,0.3);font-style:italic;}
+.bg-hero{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% -20%,rgba(26,107,84,0.3) 0%,transparent 60%);}
+</style>
+</head>
+<body>
+<a href="index.html" class="absolute top-6 left-6 font-display text-lg tracking-[0.3em] gold-text z-10">ELEGANT LA VIE</a>
+
+<div class="flex-1 flex items-center justify-center px-6 py-20 relative">
+  <div class="bg-hero"></div>
+  <div class="w-full max-w-md relative z-10">
+    <div class="text-center mb-10">
+      <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-4">✦ WELCOME BACK ✦</p>
+      <h1 class="font-display text-4xl gold-text mb-2" id="form-title">Sign In</h1>
+      <div class="gold-line w-24 mx-auto mt-4"></div>
+    </div>
+
+    <div class="glass-card rounded-2xl p-8">
+      <!-- Login Form -->
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="mb-5">
+          <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">EMAIL ADDRESS</label>
+          <input type="email" id="login-email" required placeholder="your@email.com"
+                 class="input-field w-full px-4 py-3 rounded-lg text-sm font-serif">
+        </div>
+        <div class="mb-6">
+          <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">PASSWORD</label>
+          <input type="password" id="login-pass" required placeholder="••••••••"
+                 class="input-field w-full px-4 py-3 rounded-lg text-sm font-serif">
+        </div>
+        <div id="login-error" class="hidden mb-4 p-3 rounded-lg text-xs font-serif italic text-red-400" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);"></div>
+        <button type="submit" id="login-btn" class="btn-gold w-full py-4 text-xs tracking-[0.2em] rounded-xl mb-4">SIGN IN</button>
+        <p class="text-center text-xs text-gray-600 font-serif italic">
+          Don't have an account? 
+          <button type="button" onclick="toggleForm()" class="text-yellow-600 hover:text-yellow-400 transition-colors">Register</button>
+        </p>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="hidden" onsubmit="handleRegister(event)">
+        <div class="mb-5">
+          <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">FULL NAME</label>
+          <input type="text" id="reg-name" required placeholder="Your Name"
+                 class="input-field w-full px-4 py-3 rounded-lg text-sm font-serif">
+        </div>
+        <div class="mb-5">
+          <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">EMAIL ADDRESS</label>
+          <input type="email" id="reg-email" required placeholder="your@email.com"
+                 class="input-field w-full px-4 py-3 rounded-lg text-sm font-serif">
+        </div>
+        <div class="mb-6">
+          <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">PASSWORD</label>
+          <input type="password" id="reg-pass" required placeholder="Minimum 8 characters" minlength="8"
+                 class="input-field w-full px-4 py-3 rounded-lg text-sm font-serif">
+        </div>
+        <div id="reg-error" class="hidden mb-4 p-3 rounded-lg text-xs font-serif italic text-red-400" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);"></div>
+        <button type="submit" id="reg-btn" class="btn-gold w-full py-4 text-xs tracking-[0.2em] rounded-xl mb-4">CREATE ACCOUNT</button>
+        <p class="text-center text-xs text-gray-600 font-serif italic">
+          Already have an account? 
+          <button type="button" onclick="toggleForm()" class="text-yellow-600 hover:text-yellow-400 transition-colors">Sign In</button>
+        </p>
+      </form>
+    </div>
+
+    <!-- Admin hint -->
+    <div class="mt-6 glass-card rounded-xl p-4 text-center" style="border-color:rgba(201,168,76,0.1);">
+      <p class="font-display text-xs tracking-[0.2em] text-yellow-800 mb-1">ADMIN ACCESS</p>
+      <p class="font-serif text-xs text-gray-600 italic">admin@elegantlavie.com · admin123</p>
+    </div>
+  </div>
+</div>
+
+<footer class="border-t py-8 px-6 text-center relative z-10" style="border-color:rgba(201,168,76,0.15);background:rgba(5,15,12,0.8);">
+  <p class="text-xs text-gray-700">© 2024 Elegant La Vie · 📞 03008206118</p>
+</footer>
+
+<script>
+let showingLogin = true;
+
+function toggleForm(){
+  showingLogin = !showingLogin;
+  document.getElementById('login-form').classList.toggle('hidden', !showingLogin);
+  document.getElementById('register-form').classList.toggle('hidden', showingLogin);
+  document.getElementById('form-title').textContent = showingLogin ? 'Sign In' : 'Create Account';
+}
+
+async function handleLogin(e){
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-error');
+  btn.textContent = 'SIGNING IN...'; btn.disabled = true;
+  errEl.classList.add('hidden');
+  try{
+    const res = await fetch('/api/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:document.getElementById('login-email').value,password:document.getElementById('login-pass').value})
+    });
+    const data = await res.json();
+    if(!res.ok){errEl.textContent=data.error||'Login failed';errEl.classList.remove('hidden');return;}
+    localStorage.setItem('elv_token',data.token);
+    localStorage.setItem('elv_user',JSON.stringify(data.user));
+    const redirect = localStorage.getItem('elv_redirect') || (data.user.role==='admin'?'admin.html':'index.html');
+    localStorage.removeItem('elv_redirect');
+    window.location.href = redirect;
+  }catch(err){
+    errEl.textContent='Network error. Please try again.';
+    errEl.classList.remove('hidden');
+  }finally{
+    btn.textContent='SIGN IN';btn.disabled=false;
+  }
+}
+
+async function handleRegister(e){
+  e.preventDefault();
+  const btn = document.getElementById('reg-btn');
+  const errEl = document.getElementById('reg-error');
+  btn.textContent='CREATING...';btn.disabled=true;
+  errEl.classList.add('hidden');
+  try{
+    const res = await fetch('/api/register',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:document.getElementById('reg-name').value,email:document.getElementById('reg-email').value,password:document.getElementById('reg-pass').value})
+    });
+    const data = await res.json();
+    if(!res.ok){errEl.textContent=data.error||'Registration failed';errEl.classList.remove('hidden');return;}
+    localStorage.setItem('elv_token',data.token);
+    localStorage.setItem('elv_user',JSON.stringify(data.user));
+    window.location.href='index.html';
+  }catch(err){
+    errEl.textContent='Network error. Please try again.';
+    errEl.classList.remove('hidden');
+  }finally{
+    btn.textContent='CREATE ACCOUNT';btn.disabled=false;
+  }
+}
+
+// If already logged in
+if(localStorage.getItem('elv_token')){
+  const user = JSON.parse(localStorage.getItem('elv_user')||'{}');
+  window.location.href = user.role==='admin'?'admin.html':'index.html';
+}
+</script>
+</body>
+</html>

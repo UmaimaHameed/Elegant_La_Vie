@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scent Quiz — Elegant La Vie</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--emerald-deep:#0a1f1a;--gold:#c9a84c;--gold-light:#e2c47e;--gold-dim:#8a6f2e;--cream:#f5f0e8;--glass:rgba(255,255,255,0.04);--glass-border:rgba(201,168,76,0.2);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',sans-serif;min-height:100vh;}
+.font-display{font-family:'Cinzel',serif;}.font-serif{font-family:'Cormorant Garamond',serif;}
+.gold-text{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.glass-card{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);}
+.gold-line{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light),var(--gold));background-size:200% auto;color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.15em;font-weight:600;transition:all .3s;}
+.btn-gold:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 10px 30px rgba(201,168,76,.4);}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,31,26,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(201,168,76,.15);}
+.option-card{transition:all .3s;cursor:pointer;border:1px solid rgba(201,168,76,0.2);}
+.option-card:hover{border-color:var(--gold);background:rgba(201,168,76,0.08);transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,.3);}
+.option-card.selected{border-color:var(--gold);background:rgba(201,168,76,0.12);}
+.product-card{transition:transform .4s,box-shadow .4s;cursor:pointer;}
+.product-card:hover{transform:translateY(-8px);box-shadow:0 30px 60px rgba(0,0,0,.5);}
+.mood-badge{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid var(--gold-dim);color:var(--gold-light);background:rgba(201,168,76,.08);}
+.cart-badge{position:absolute;top:-6px;right:-6px;background:var(--gold);color:var(--emerald-deep);width:18px;height:18px;border-radius:50%;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeUp .6s ease forwards;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--emerald-deep);}::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px;}
+</style>
+</head>
+<body>
+<nav class="navbar px-6 py-5">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="font-display text-xl tracking-[0.3em] gold-text">ELEGANT LA VIE</a>
+    <div class="hidden md:flex items-center gap-8 text-xs tracking-[0.2em] uppercase font-light">
+      <a href="index.html" class="hover:text-yellow-300 transition-colors">Home</a>
+      <a href="products.html" class="hover:text-yellow-300 transition-colors">Collection</a>
+      <a href="quiz.html" class="text-yellow-400">Scent Quiz</a>
+    </div>
+    <div class="flex items-center gap-5">
+      <a href="cart.html" class="relative">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <span class="cart-badge" id="cart-count">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Quiz -->
+<div id="quiz-section" class="pt-32 pb-20 px-6 min-h-screen flex items-center">
+  <div class="max-w-3xl mx-auto w-full">
+    <!-- Progress -->
+    <div class="mb-12">
+      <div class="flex justify-between text-xs font-display tracking-[0.2em] text-yellow-700 mb-3">
+        <span id="step-label">STEP 1 OF 4</span>
+        <span id="step-pct">25%</span>
+      </div>
+      <div class="h-0.5 bg-white bg-opacity-10 rounded-full">
+        <div id="progress-bar" class="h-full rounded-full transition-all duration-500" style="background:linear-gradient(90deg,var(--gold-dim),var(--gold));width:25%;"></div>
+      </div>
+    </div>
+
+    <!-- Steps -->
+    <div id="step-1" class="animate-in">
+      <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-6 text-center">✦ DISCOVER YOUR SCENT ✦</p>
+      <h2 class="font-display text-4xl md:text-5xl gold-text text-center mb-4">What is your mood today?</h2>
+      <p class="font-serif text-gray-400 text-center italic mb-12 text-lg">Choose what resonates with you right now</p>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q1','Mysterious', this)">
+          <div class="text-5xl mb-4">🌙</div>
+          <h3 class="font-display text-xl gold-text mb-2">Mysterious</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Dark, enigmatic, complex</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q1','Floral', this)">
+          <div class="text-5xl mb-4">🌹</div>
+          <h3 class="font-display text-xl gold-text mb-2">Floral</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Romantic, fresh, blooming</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q1','Fresh', this)">
+          <div class="text-5xl mb-4">🌊</div>
+          <h3 class="font-display text-xl gold-text mb-2">Fresh</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Clean, crisp, invigorating</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q1','Warm', this)">
+          <div class="text-5xl mb-4">🕯️</div>
+          <h3 class="font-display text-xl gold-text mb-2">Warm</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Cozy, rich, sensual</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="step-2" class="hidden">
+      <h2 class="font-display text-4xl md:text-5xl gold-text text-center mb-4">What time do you wear perfume?</h2>
+      <p class="font-serif text-gray-400 text-center italic mb-12 text-lg">Your routine reveals your soul</p>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q2','morning', this)">
+          <div class="text-5xl mb-4">🌅</div>
+          <h3 class="font-display text-lg gold-text mb-2">Morning Ritual</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Starting fresh each day</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q2','evening', this)">
+          <div class="text-5xl mb-4">🌆</div>
+          <h3 class="font-display text-lg gold-text mb-2">Evening Elegance</h3>
+          <p class="font-serif text-gray-500 text-sm italic">For special occasions</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q2','always', this)">
+          <div class="text-5xl mb-4">✨</div>
+          <h3 class="font-display text-lg gold-text mb-2">Always</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Fragrance is essential</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q2','rarely', this)">
+          <div class="text-5xl mb-4">🎯</div>
+          <h3 class="font-display text-lg gold-text mb-2">Special Only</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Rare, precious moments</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="step-3" class="hidden">
+      <h2 class="font-display text-4xl md:text-5xl gold-text text-center mb-4">Choose your world</h2>
+      <p class="font-serif text-gray-400 text-center italic mb-12 text-lg">Where do you feel most alive?</p>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q3','forest', this)">
+          <div class="text-5xl mb-4">🌲</div>
+          <h3 class="font-display text-lg gold-text mb-2">Ancient Forests</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Moss, cedar, earth</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q3','ocean', this)">
+          <div class="text-5xl mb-4">🌊</div>
+          <h3 class="font-display text-lg gold-text mb-2">Open Ocean</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Salt, freedom, horizon</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q3','garden', this)">
+          <div class="text-5xl mb-4">🌸</div>
+          <h3 class="font-display text-lg gold-text mb-2">Secret Gardens</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Roses, petals, dew</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q3','city', this)">
+          <div class="text-5xl mb-4">🏙️</div>
+          <h3 class="font-display text-lg gold-text mb-2">City Nights</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Mystery, warmth, amber</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="step-4" class="hidden">
+      <h2 class="font-display text-4xl md:text-5xl gold-text text-center mb-4">Your signature element?</h2>
+      <p class="font-serif text-gray-400 text-center italic mb-12 text-lg">The essence that defines you</p>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q4','dark', this)">
+          <div class="text-5xl mb-4">🌑</div>
+          <h3 class="font-display text-lg gold-text mb-2">Darkness</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Depth and mystery</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q4','light', this)">
+          <div class="text-5xl mb-4">☀️</div>
+          <h3 class="font-display text-lg gold-text mb-2">Light</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Joy and radiance</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q4','earth', this)">
+          <div class="text-5xl mb-4">🪨</div>
+          <h3 class="font-display text-lg gold-text mb-2">Earth</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Grounded and warm</p>
+        </div>
+        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q4','air', this)">
+          <div class="text-5xl mb-4">🌬️</div>
+          <h3 class="font-display text-lg gold-text mb-2">Air</h3>
+          <p class="font-serif text-gray-500 text-sm italic">Free and fresh</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav buttons -->
+    <div class="flex justify-between mt-10">
+      <button id="prev-btn" onclick="prevStep()" class="hidden font-display text-xs tracking-[0.2em] text-yellow-700 hover:text-yellow-400 transition-colors">← PREVIOUS</button>
+      <div></div>
+      <button id="next-btn" onclick="nextStep()" class="btn-gold px-8 py-3 text-xs tracking-[0.2em] rounded-lg opacity-50 cursor-not-allowed" disabled>NEXT →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Results -->
+<div id="results-section" class="hidden pt-32 pb-20 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 animate-in">
+      <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-4">✦ YOUR PERFECT MATCH ✦</p>
+      <h2 class="font-display text-5xl md:text-6xl gold-text mb-4" id="result-title">Discover Your Scent</h2>
+      <div style="height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);" class="w-32 mx-auto mb-6"></div>
+      <p class="font-serif text-gray-400 text-xl italic" id="result-subtitle">Fragrances matched to your soul</p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="results-grid"></div>
+    <div class="text-center mt-12">
+      <button onclick="retakeQuiz()" class="font-display text-xs tracking-[0.3em] text-yellow-700 border-b border-yellow-800 pb-1 hover:text-yellow-400 hover:border-yellow-400 transition-colors">↺ RETAKE QUIZ</button>
+    </div>
+  </div>
+</div>
+
+<footer class="border-t py-10 px-6 text-center" style="border-color:rgba(201,168,76,0.15);background:rgba(5,15,12,0.8);">
+  <p class="font-display text-xl tracking-[0.3em] gold-text mb-3">ELEGANT LA VIE</p>
+  <p class="text-xs text-gray-600">📞 03008206118 &nbsp;|&nbsp; 💬 WhatsApp: 03008206118</p>
+</footer>
+
+<script>
+let step = 1;
+const totalSteps = 4;
+const answers = {};
+let determinedMood = null;
+
+function getCart(){ try{ return JSON.parse(localStorage.getItem('elv_cart')||'[]'); }catch{ return []; } }
+function saveCart(c){ localStorage.setItem('elv_cart', JSON.stringify(c)); }
+function updateCartCount(){ document.getElementById('cart-count').textContent = getCart().reduce((s,i)=>s+i.quantity,0); }
+
+function selectOption(q, val, el) {
+  el.closest('[id^="step-"]').querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  answers[q] = val;
+  const btn = document.getElementById('next-btn');
+  btn.disabled = false;
+  btn.classList.remove('opacity-50','cursor-not-allowed');
+}
+
+function updateProgress(){
+  const pct = (step / totalSteps) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('step-label').textContent = `STEP ${step} OF ${totalSteps}`;
+  document.getElementById('step-pct').textContent = Math.round(pct) + '%';
+  document.getElementById('prev-btn').classList.toggle('hidden', step === 1);
+}
+
+function nextStep(){
+  if(step < totalSteps){
+    document.getElementById(`step-${step}`).classList.add('hidden');
+    step++;
+    const el = document.getElementById(`step-${step}`);
+    el.classList.remove('hidden');
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = 'fadeUp .5s ease forwards';
+    updateProgress();
+    const btn = document.getElementById('next-btn');
+    if(answers[`q${step}`]){ btn.disabled=false; btn.classList.remove('opacity-50','cursor-not-allowed'); }
+    else { btn.disabled=true; btn.classList.add('opacity-50','cursor-not-allowed'); }
+    if(step === totalSteps){ btn.textContent = 'REVEAL MY SCENT ✦'; }
+  } else {
+    showResults();
+  }
+}
+
+function prevStep(){
+  if(step > 1){
+    document.getElementById(`step-${step}`).classList.add('hidden');
+    step--;
+    document.getElementById(`step-${step}`).classList.remove('hidden');
+    updateProgress();
+    const btn = document.getElementById('next-btn');
+    btn.textContent = 'NEXT →';
+    btn.disabled = false;
+    btn.classList.remove('opacity-50','cursor-not-allowed');
+  }
+}
+
+function determineMood(){
+  // Q1 (mood selection) is primary
+  if(answers.q1) return answers.q1;
+  // Fallback logic
+  const q3map = { forest:'Warm', ocean:'Fresh', garden:'Floral', city:'Mysterious' };
+  const q4map = { dark:'Mysterious', light:'Floral', earth:'Warm', air:'Fresh' };
+  return q3map[answers.q3] || q4map[answers.q4] || 'Mysterious';
+}
+
+const moodMessages = {
+  Mysterious: { title: 'The Mysterious Soul', subtitle: 'Dark, deep, and endlessly alluring — your fragrance should match your magnetic aura' },
+  Floral: { title: 'The Floral Spirit', subtitle: 'Romantic and radiant — you bloom in every room you enter' },
+  Fresh: { title: 'The Free Spirit', subtitle: 'Crisp, clean, and full of life — your scent should feel like a breath of fresh ocean air' },
+  Warm: { title: 'The Warm Heart', subtitle: 'Rich, cozy, and deeply sensual — your fragrance wraps others in luxurious warmth' },
+};
+
+async function showResults(){
+  determinedMood = determineMood();
+  document.getElementById('quiz-section').classList.add('hidden');
+  const resultsEl = document.getElementById('results-section');
+  resultsEl.classList.remove('hidden');
+  
+  const msg = moodMessages[determinedMood] || moodMessages.Mysterious;
+  document.getElementById('result-title').textContent = msg.title;
+  document.getElementById('result-subtitle').textContent = msg.subtitle;
+
+  try {
+    const res = await fetch(`/api/products/mood/${determinedMood}`);
+    const data = await res.json();
+    const products = data.products || [];
+    document.getElementById('results-grid').innerHTML = products.map(p => `
+      <div class="product-card glass-card rounded-xl overflow-hidden" onclick="location.href='product.html?id=${p.id}'" style="border:1px solid rgba(201,168,76,0.2);">
+        <div class="aspect-square overflow-hidden bg-emerald-950">
+          <img src="${p.image||'https://images.unsplash.com/photo-1541643600914-78b084683702?w=400'}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <h3 class="font-display text-lg gold-text mb-1">${p.name}</h3>
+          <p class="font-serif text-xs text-gray-500 italic mb-3">${p.scent_notes||''}</p>
+          <div class="flex justify-between items-center">
+            <span class="font-display text-xl gold-text">$${p.price}</span>
+            <button onclick="event.stopPropagation();addToCart(${JSON.stringify(p).replace(/"/g,'&quot;')})" 
+                    class="btn-gold px-4 py-2 text-xs tracking-widest rounded-lg">ADD</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) {
+    document.getElementById('results-grid').innerHTML = '<p class="col-span-3 text-center text-gray-500 font-serif italic">Could not load recommendations.</p>';
+  }
+}
+
+function addToCart(p){
+  const cart=getCart(); const ex=cart.find(i=>i.id===p.id);
+  if(ex) ex.quantity++; else cart.push({...p,quantity:1});
+  saveCart(cart); updateCartCount();
+  showToast(`${p.name} added ✦`);
+}
+
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9999;background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.4);padding:14px 24px;border-radius:12px;font-family:"Cormorant Garamond",serif;font-style:italic;color:#e2c47e;';
+  t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3000);
+}
+
+function retakeQuiz(){
+  step=1; Object.keys(answers).forEach(k=>delete answers[k]);
+  document.getElementById('results-section').classList.add('hidden');
+  document.getElementById('quiz-section').classList.remove('hidden');
+  for(let i=1;i<=4;i++) document.getElementById(`step-${i}`).classList.toggle('hidden', i!==1);
+  document.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('next-btn').disabled=true;
+  document.getElementById('next-btn').classList.add('opacity-50','cursor-not-allowed');
+  document.getElementById('next-btn').textContent='NEXT →';
+  updateProgress();
+}
+
+// Auto-run if URL has mood param
+const urlMood = new URLSearchParams(window.location.search).get('mood');
+if(urlMood){
+  answers.q1 = urlMood;
+  step = 4;
+  for(let i=1;i<=4;i++) document.getElementById(`step-${i}`).classList.toggle('hidden', i!==4);
+  updateProgress();
+  showResults();
+}
+
+updateCartCount();
+</script>
+</body>
+</html>

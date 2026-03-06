@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Elegant La Vie</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--emerald-deep:#0a1f1a;--emerald-dark:#0d2b24;--gold:#c9a84c;--gold-light:#e2c47e;--gold-dim:#8a6f2e;--cream:#f5f0e8;--glass:rgba(255,255,255,0.04);--glass-border:rgba(201,168,76,0.2);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',sans-serif;min-height:100vh;}
+.font-display{font-family:'Cinzel',serif;}.font-serif{font-family:'Cormorant Garamond',serif;}
+.gold-text{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.glass-card{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);}
+.gold-line{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light),var(--gold));background-size:200% auto;color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.1em;font-weight:600;transition:all .3s;cursor:pointer;border:none;}
+.btn-gold:hover{background-position:right center;transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.4);}
+.sidebar{width:240px;min-height:100vh;background:rgba(8,22,18,0.9);border-right:1px solid rgba(201,168,76,0.12);position:fixed;top:0;left:0;z-index:50;display:flex;flex-direction:column;}
+.main{margin-left:240px;min-height:100vh;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;color:rgba(245,240,232,.5);cursor:pointer;transition:all .3s;border-left:2px solid transparent;}
+.nav-item:hover,.nav-item.active{color:var(--gold-light);background:rgba(201,168,76,.06);border-left-color:var(--gold);}
+.stat-card{padding:24px;border-radius:16px;}
+.input-field{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);color:var(--cream);outline:none;transition:border-color .3s;width:100%;}
+.input-field:focus{border-color:rgba(201,168,76,0.6);}
+.input-field::placeholder{color:rgba(245,240,232,0.3);font-style:italic;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;}
+.badge{font-size:.6rem;padding:2px 8px;border-radius:10px;font-family:'Cinzel',serif;letter-spacing:.15em;}
+.badge-pending{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);color:#fbbf24;}
+.badge-paid{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#4ade80;}
+.badge-demo{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);color:#a78bfa;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="p-6 border-b" style="border-color:rgba(201,168,76,.12);">
+    <p class="font-display text-xs tracking-[0.3em] gold-text mb-1">ELEGANT LA VIE</p>
+    <p class="font-serif text-xs text-gray-600 italic">Admin Console</p>
+  </div>
+  <div class="py-4 flex-1">
+    <div class="nav-item active" onclick="switchTab('dashboard', this)">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7h18M3 12h18M3 17h18"/></svg>
+      DASHBOARD
+    </div>
+    <div class="nav-item" onclick="switchTab('products', this)">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+      PRODUCTS
+    </div>
+    <div class="nav-item" onclick="switchTab('orders', this)">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      ORDERS
+    </div>
+  </div>
+  <div class="p-6 border-t" style="border-color:rgba(201,168,76,.12);">
+    <p class="font-display text-xs text-yellow-700 mb-1 tracking-wider" id="admin-name">Kaleem Ullah</p>
+    <button onclick="logout()" class="font-display text-xs tracking-[.15em] text-gray-600 hover:text-red-400 transition-colors">LOGOUT</button>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+  <!-- Header -->
+  <div class="px-8 py-6 border-b flex justify-between items-center sticky top-0 z-40" style="background:rgba(10,31,26,.95);border-color:rgba(201,168,76,.12);backdrop-filter:blur(20px);">
+    <div>
+      <h1 class="font-display text-xl gold-text tracking-wider" id="page-title">Dashboard</h1>
+      <p class="font-serif text-xs text-gray-600 italic mt-0.5" id="page-sub">Overview & Analytics</p>
+    </div>
+    <button onclick="openAddProduct()" id="add-btn" class="btn-gold px-5 py-2.5 text-xs tracking-[.15em] rounded-lg">+ ADD PERFUME</button>
+  </div>
+
+  <!-- ─── Dashboard Tab ─── -->
+  <div id="tab-dashboard" class="p-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div class="stat-card glass-card">
+        <p class="font-display text-xs tracking-[.2em] text-yellow-700 mb-3">PRODUCTS</p>
+        <p class="font-display text-4xl gold-text" id="stat-products">—</p>
+        <p class="font-serif text-xs text-gray-600 italic mt-1">In collection</p>
+      </div>
+      <div class="stat-card glass-card">
+        <p class="font-display text-xs tracking-[.2em] text-yellow-700 mb-3">ORDERS</p>
+        <p class="font-display text-4xl gold-text" id="stat-orders">—</p>
+        <p class="font-serif text-xs text-gray-600 italic mt-1">Total orders</p>
+      </div>
+      <div class="stat-card glass-card">
+        <p class="font-display text-xs tracking-[.2em] text-yellow-700 mb-3">REVENUE</p>
+        <p class="font-display text-4xl gold-text" id="stat-revenue">—</p>
+        <p class="font-serif text-xs text-gray-600 italic mt-1">Total sales</p>
+      </div>
+      <div class="stat-card glass-card">
+        <p class="font-display text-xs tracking-[.2em] text-yellow-700 mb-3">CUSTOMERS</p>
+        <p class="font-display text-4xl gold-text" id="stat-customers">—</p>
+        <p class="font-serif text-xs text-gray-600 italic mt-1">Registered</p>
+      </div>
+    </div>
+    <div class="glass-card p-6 rounded-xl">
+      <h3 class="font-display text-sm tracking-[.2em] text-yellow-700 mb-4">RECENT ORDERS</h3>
+      <div id="recent-orders-dash"></div>
+    </div>
+  </div>
+
+  <!-- ─── Products Tab ─── -->
+  <div id="tab-products" class="hidden p-8">
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="admin-products-grid">
+      <div class="col-span-3 text-center py-12">
+        <div class="w-8 h-8 border-2 border-yellow-700 border-t-yellow-400 rounded-full animate-spin mx-auto mb-3"></div>
+        <p class="font-serif text-gray-500 italic text-sm">Loading products...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Orders Tab ─── -->
+  <div id="tab-orders" class="hidden p-8">
+    <div class="overflow-x-auto">
+      <table class="w-full" id="orders-table">
+        <thead>
+          <tr class="text-left border-b" style="border-color:rgba(201,168,76,.15);">
+            <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4 pr-6">ORDER ID</th>
+            <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4 pr-6">CUSTOMER</th>
+            <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4 pr-6">ITEMS</th>
+            <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4 pr-6">TOTAL</th>
+            <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4 pr-6">STATUS</th>
+            <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4">DATE</th>
+          </tr>
+        </thead>
+        <tbody id="orders-body">
+          <tr><td colspan="6" class="text-center py-12 font-serif text-gray-500 italic">Loading orders...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Add/Edit Product Modal -->
+<div id="product-modal" class="modal-overlay hidden">
+  <div class="glass-card rounded-2xl p-8 w-full max-w-lg mx-4 max-h-screen overflow-y-auto" style="border-color:rgba(201,168,76,0.3);">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="font-display text-lg gold-text" id="modal-title">Add Perfume</h3>
+      <button onclick="closeModal()" class="text-gray-600 hover:text-white transition-colors text-2xl leading-none">×</button>
+    </div>
+    <form id="product-form" onsubmit="handleProductSubmit(event)">
+      <input type="hidden" id="edit-id">
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="col-span-2">
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">PERFUME NAME *</label>
+          <input type="text" id="f-name" required placeholder="e.g. Noir Mystique" class="input-field px-4 py-3 rounded-lg text-sm font-serif">
+        </div>
+        <div>
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">PRICE (USD) *</label>
+          <input type="number" id="f-price" required placeholder="285" step="0.01" min="0" class="input-field px-4 py-3 rounded-lg text-sm">
+        </div>
+        <div>
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">SCENT MOOD *</label>
+          <select id="f-mood" class="input-field px-4 py-3 rounded-lg text-sm" style="background:rgba(10,31,26,0.95);">
+            <option value="Mysterious">🌙 Mysterious</option>
+            <option value="Floral">🌹 Floral</option>
+            <option value="Fresh">🌊 Fresh</option>
+            <option value="Warm">🕯️ Warm</option>
+          </select>
+        </div>
+        <div class="col-span-2">
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">SCENT NOTES</label>
+          <input type="text" id="f-notes" placeholder="Oud, Amber, Rose, Sandalwood" class="input-field px-4 py-3 rounded-lg text-sm font-serif">
+        </div>
+        <div class="col-span-2">
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">IMAGE URL</label>
+          <input type="url" id="f-image" placeholder="https://images.unsplash.com/..." class="input-field px-4 py-3 rounded-lg text-sm">
+        </div>
+        <div class="col-span-2">
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">DESCRIPTION</label>
+          <textarea id="f-desc" rows="3" placeholder="A captivating fragrance..." class="input-field px-4 py-3 rounded-lg text-sm font-serif resize-none"></textarea>
+        </div>
+        <div>
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">STOCK</label>
+          <input type="number" id="f-stock" value="100" min="0" class="input-field px-4 py-3 rounded-lg text-sm">
+        </div>
+        <div class="flex items-center gap-3 pt-6">
+          <input type="checkbox" id="f-featured" class="w-4 h-4 accent-yellow-500">
+          <label for="f-featured" class="font-display text-xs tracking-[.1em] text-yellow-700 cursor-pointer">FEATURED</label>
+        </div>
+      </div>
+      <div id="form-error" class="hidden mb-4 p-3 rounded-lg text-xs font-serif italic text-red-400" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);"></div>
+      <div class="flex gap-3 mt-4">
+        <button type="submit" id="submit-btn" class="btn-gold flex-1 py-3 text-xs tracking-[.15em] rounded-xl">SAVE PERFUME</button>
+        <button type="button" onclick="closeModal()" class="glass-card flex-1 py-3 text-xs font-display tracking-[.1em] text-yellow-700 hover:border-yellow-500 transition-all rounded-xl">CANCEL</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div id="delete-modal" class="modal-overlay hidden">
+  <div class="glass-card rounded-2xl p-8 max-w-sm mx-4 text-center" style="border-color:rgba(239,68,68,0.3);">
+    <div class="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);">
+      <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+    </div>
+    <h3 class="font-display text-lg text-red-400 mb-2">Delete Perfume</h3>
+    <p class="font-serif text-gray-400 italic text-sm mb-6">Are you sure you want to delete "<span id="del-name"></span>"? This cannot be undone.</p>
+    <div class="flex gap-3">
+      <button onclick="confirmDelete()" class="flex-1 py-3 text-xs font-display tracking-widest rounded-xl cursor-pointer text-white" style="background:rgba(239,68,68,0.8);">DELETE</button>
+      <button onclick="document.getElementById('delete-modal').classList.add('hidden')" class="glass-card flex-1 py-3 text-xs font-display tracking-widest text-yellow-700 hover:border-yellow-500 transition-all rounded-xl cursor-pointer">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let authToken = null;
+let deleteTargetId = null;
+let allAdminProducts = [];
+
+// ── Auth check
+function init(){
+  authToken = localStorage.getItem('elv_token');
+  if(!authToken){ window.location.href='login.html'; return; }
+  const user = JSON.parse(localStorage.getItem('elv_user')||'{}');
+  if(user.role !== 'admin'){ alert('Admin access required.'); window.location.href='index.html'; return; }
+  document.getElementById('admin-name').textContent = user.name || 'Kaleem Ullah';
+  loadDashboard();
+}
+
+function authHeaders(){ return {'Content-Type':'application/json','Authorization':'Bearer '+authToken}; }
+
+// ── Tab switching
+function switchTab(tab, el){
+  ['dashboard','products','orders'].forEach(t=>{
+    document.getElementById(`tab-${t}`).classList.toggle('hidden', t!==tab);
+  });
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  const titles = {dashboard:['Dashboard','Overview & Analytics'],products:['Products','Manage your collection'],orders:['Orders','Customer orders']};
+  document.getElementById('page-title').textContent=titles[tab][0];
+  document.getElementById('page-sub').textContent=titles[tab][1];
+  document.getElementById('add-btn').classList.toggle('hidden', tab!=='products');
+  if(tab==='products') loadAdminProducts();
+  if(tab==='orders') loadOrders();
+}
+
+// ── Dashboard
+async function loadDashboard(){
+  try{
+    const [statsRes, ordersRes] = await Promise.all([
+      fetch('/api/admin/stats',{headers:authHeaders()}),
+      fetch('/api/admin/orders',{headers:authHeaders()})
+    ]);
+    const statsData = await statsRes.json();
+    const ordersData = await ordersRes.json();
+    document.getElementById('stat-products').textContent = statsData.products||0;
+    document.getElementById('stat-orders').textContent = statsData.orders||0;
+    document.getElementById('stat-revenue').textContent = '$'+(statsData.revenue||0).toFixed(0);
+    document.getElementById('stat-customers').textContent = statsData.customers||0;
+    const orders = (ordersData.orders||[]).slice(0,5);
+    document.getElementById('recent-orders-dash').innerHTML = orders.length ? `
+      <table class="w-full text-sm">
+        <thead><tr class="text-left border-b" style="border-color:rgba(201,168,76,.1);">
+          <th class="font-display text-xs tracking-wider text-yellow-800 pb-3 pr-4">ORDER</th>
+          <th class="font-display text-xs tracking-wider text-yellow-800 pb-3 pr-4">EMAIL</th>
+          <th class="font-display text-xs tracking-wider text-yellow-800 pb-3 pr-4">TOTAL</th>
+          <th class="font-display text-xs tracking-wider text-yellow-800 pb-3">STATUS</th>
+        </tr></thead>
+        <tbody>${orders.map(o=>`
+          <tr class="border-b" style="border-color:rgba(201,168,76,.05);">
+            <td class="py-3 pr-4 font-display text-xs text-gray-400">#${o.id}</td>
+            <td class="py-3 pr-4 font-serif italic text-xs text-gray-400">${o.user_email}</td>
+            <td class="py-3 pr-4 font-display text-sm gold-text">$${o.total_amount?.toFixed(2)}</td>
+            <td class="py-3"><span class="badge badge-${o.status}">${(o.status||'pending').toUpperCase()}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>` : '<p class="font-serif text-gray-600 italic text-sm">No orders yet.</p>';
+  }catch(e){ console.error('Dashboard load error:',e); }
+}
+
+// ── Products
+async function loadAdminProducts(){
+  try{
+    const res = await fetch('/api/admin/products',{headers:authHeaders()});
+    const data = await res.json();
+    allAdminProducts = data.products||[];
+    renderAdminProducts(allAdminProducts);
+  }catch(e){
+    document.getElementById('admin-products-grid').innerHTML='<p class="col-span-3 text-center py-8 text-gray-500 font-serif italic">Failed to load products.</p>';
+  }
+}
+
+function renderAdminProducts(products){
+  if(!products.length){
+    document.getElementById('admin-products-grid').innerHTML='<div class="col-span-3 text-center py-16"><p class="font-serif text-gray-500 italic">No products yet. Add your first perfume!</p></div>';
+    return;
+  }
+  document.getElementById('admin-products-grid').innerHTML = products.map(p=>`
+    <div class="glass-card rounded-xl overflow-hidden" style="border-color:rgba(201,168,76,0.15);">
+      <div class="h-40 overflow-hidden relative">
+        <img src="${p.image||'https://images.unsplash.com/photo-1541643600914-78b084683702?w=300'}" 
+             alt="${p.name}" class="w-full h-full object-cover">
+        ${p.featured?'<span class="absolute top-2 left-2 text-xs font-display tracking-wider px-2 py-1 rounded" style="background:rgba(201,168,76,0.9);color:#0a1f1a;">✦ FEATURED</span>':''}
+      </div>
+      <div class="p-4">
+        <div class="flex justify-between items-start mb-2">
+          <h4 class="font-display text-sm gold-text leading-tight">${p.name}</h4>
+          <span class="font-display text-sm gold-text ml-2 whitespace-nowrap">$${p.price}</span>
+        </div>
+        <p class="font-serif text-xs text-gray-500 italic mb-1">${p.scent_mood}</p>
+        <p class="text-xs text-gray-600 mb-3 line-clamp-1">${p.scent_notes||''}</p>
+        <div class="flex gap-2">
+          <button onclick="openEditProduct(${p.id})" class="flex-1 py-2 text-xs font-display tracking-[.1em] glass-card rounded-lg text-yellow-600 hover:border-yellow-500 transition-all cursor-pointer">EDIT</button>
+          <button onclick="openDeleteConfirm(${p.id},'${p.name.replace(/'/g,"\\'")}' )" class="flex-1 py-2 text-xs font-display tracking-[.1em] rounded-lg cursor-pointer text-red-500 hover:bg-red-500 hover:bg-opacity-10 transition-all" style="border:1px solid rgba(239,68,68,0.3);">DELETE</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Orders
+async function loadOrders(){
+  try{
+    const res = await fetch('/api/admin/orders',{headers:authHeaders()});
+    const data = await res.json();
+    const orders = data.orders||[];
+    document.getElementById('orders-body').innerHTML = orders.length ? orders.map(o=>`
+      <tr class="border-b hover:bg-white hover:bg-opacity-5 transition-colors" style="border-color:rgba(201,168,76,.05);">
+        <td class="py-4 pr-6 font-display text-xs text-gray-400">#${o.id}</td>
+        <td class="py-4 pr-6 font-serif italic text-xs text-gray-400">${o.user_email}</td>
+        <td class="py-4 pr-6 text-xs text-gray-500 max-w-[200px] truncate">${o.items_summary||'—'}</td>
+        <td class="py-4 pr-6 font-display text-sm gold-text">$${o.total_amount?.toFixed(2)}</td>
+        <td class="py-4 pr-6"><span class="badge badge-${o.status}">${(o.status||'pending').toUpperCase()}</span></td>
+        <td class="py-4 text-xs text-gray-600">${new Date(o.created_at).toLocaleDateString()}</td>
+      </tr>`).join('') : '<tr><td colspan="6" class="text-center py-12 font-serif text-gray-500 italic">No orders yet.</td></tr>';
+  }catch(e){ console.error('Orders load error:',e); }
+}
+
+// ── Product Modal
+function openAddProduct(){
+  document.getElementById('modal-title').textContent = 'Add New Perfume';
+  document.getElementById('edit-id').value = '';
+  document.getElementById('product-form').reset();
+  document.getElementById('form-error').classList.add('hidden');
+  document.getElementById('submit-btn').textContent = 'SAVE PERFUME';
+  document.getElementById('product-modal').classList.remove('hidden');
+}
+
+function openEditProduct(id){
+  const p = allAdminProducts.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('modal-title').textContent = 'Edit Perfume';
+  document.getElementById('edit-id').value = id;
+  document.getElementById('f-name').value = p.name||'';
+  document.getElementById('f-price').value = p.price||'';
+  document.getElementById('f-mood').value = p.scent_mood||'Mysterious';
+  document.getElementById('f-notes').value = p.scent_notes||'';
+  document.getElementById('f-image').value = p.image||'';
+  document.getElementById('f-desc').value = p.description||'';
+  document.getElementById('f-stock').value = p.stock||100;
+  document.getElementById('f-featured').checked = !!p.featured;
+  document.getElementById('form-error').classList.add('hidden');
+  document.getElementById('submit-btn').textContent = 'UPDATE PERFUME';
+  document.getElementById('product-modal').classList.remove('hidden');
+}
+
+function closeModal(){
+  document.getElementById('product-modal').classList.add('hidden');
+}
+
+async function handleProductSubmit(e){
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  const errEl = document.getElementById('form-error');
+  btn.textContent='SAVING...'; btn.disabled=true;
+  errEl.classList.add('hidden');
+  const editId = document.getElementById('edit-id').value;
+  const payload = {
+    name: document.getElementById('f-name').value,
+    price: parseFloat(document.getElementById('f-price').value),
+    scent_mood: document.getElementById('f-mood').value,
+    scent_notes: document.getElementById('f-notes').value,
+    image: document.getElementById('f-image').value,
+    description: document.getElementById('f-desc').value,
+    stock: parseInt(document.getElementById('f-stock').value)||100,
+    featured: document.getElementById('f-featured').checked,
+  };
+  try{
+    const url = editId ? `/api/admin/product/${editId}` : '/api/admin/product';
+    const method = editId ? 'PUT' : 'POST';
+    const res = await fetch(url,{method,headers:authHeaders(),body:JSON.stringify(payload)});
+    const data = await res.json();
+    if(!res.ok){errEl.textContent=data.error||'Failed to save';errEl.classList.remove('hidden');return;}
+    closeModal();
+    loadAdminProducts();
+    loadDashboard();
+    showToast(editId?'Perfume updated successfully ✦':'New perfume added ✦');
+  }catch(e){
+    errEl.textContent='Network error. Please try again.';
+    errEl.classList.remove('hidden');
+  }finally{
+    btn.textContent=document.getElementById('edit-id').value?'UPDATE PERFUME':'SAVE PERFUME';
+    btn.disabled=false;
+  }
+}
+
+// ── Delete
+function openDeleteConfirm(id, name){
+  deleteTargetId = id;
+  document.getElementById('del-name').textContent = name;
+  document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+async function confirmDelete(){
+  if(!deleteTargetId) return;
+  try{
+    const res = await fetch(`/api/admin/product/${deleteTargetId}`,{method:'DELETE',headers:authHeaders()});
+    if(res.ok){
+      document.getElementById('delete-modal').classList.add('hidden');
+      loadAdminProducts();
+      loadDashboard();
+      showToast('Perfume deleted ✦');
+    }
+  }catch(e){ alert('Delete failed. Please try again.'); }
+  deleteTargetId=null;
+}
+
+// ── Utilities
+function logout(){
+  localStorage.removeItem('elv_token');
+  localStorage.removeItem('elv_user');
+  window.location.href='login.html';
+}
+
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9999;background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.4);padding:14px 24px;border-radius:12px;font-size:14px;font-family:"Cormorant Garamond",serif;font-style:italic;color:#e2c47e;backdrop-filter:blur(20px);';
+  t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3000);
+}
+
+// Close modals on backdrop click
+document.getElementById('product-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.getElementById('delete-modal').addEventListener('click',function(e){if(e.target===this)this.classList.add('hidden');});
+
+init();
+</script>
+</body>
+</html>
