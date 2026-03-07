@@ -486,7 +486,7 @@ async function loadFeatured() {
       document.getElementById('hero-name').textContent = products[0].name;
       document.getElementById('hero-mood').textContent = products[0].scent_mood;
       document.getElementById('hero-notes').textContent = products[0].scent_notes;
-      document.getElementById('hero-price').textContent = '$' + products[0].price;
+      document.getElementById('hero-price').textContent = 'Rs. ' + products[0].price;
       document.getElementById('hero-img').src = products[0].image || 'https://images.unsplash.com/photo-1541643600914-78b084683702?w=500';
       document.getElementById('hero-img').alt = products[0].name;
       window._heroProduct = products[0];
@@ -505,7 +505,7 @@ async function loadFeatured() {
           <h3 class="font-display text-lg gold-text mb-1">${p.name}</h3>
           <p class="font-serif text-xs text-gray-500 italic mb-3">${p.scent_notes || ''}</p>
           <div class="flex justify-between items-center">
-            <span class="font-display text-xl gold-text">$${p.price}</span>
+            <span class="font-display text-xl gold-text">Rs. ${p.price}</span>
             <button onclick="event.stopPropagation(); addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')})" 
                     class="btn-gold px-4 py-2 text-xs tracking-widest rounded-lg">ADD</button>
           </div>
