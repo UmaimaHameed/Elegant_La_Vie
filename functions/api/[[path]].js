@@ -1,14 +1,30 @@
-// Cloudflare Pages Function - API proxy
-// This file routes all /api/* requests to the Hono worker
-
 export async function onRequest(context) {
-  // The worker handles all API routes via the same D1 binding
-  // In Pages + Workers setup, the worker is deployed separately
-  // and Pages Functions proxy to it
+  const { request } = context;
+  const url = new URL(request.url);
   
-  const { request, env } = context;
+  const workerUrl = 'https://elegant-la-vie1.bsai25108143.workers.dev';
+  const newUrl = workerUrl + url.pathname + url.search;
   
-  // Forward the request to the worker
-  // The worker handles authentication, D1 queries, and Stripe
-  return await env.WORKER.fetch(request);
+  const newRequest = new Request(newUrl, {
+    method: request.method,
+    headers: request.headers,
+    body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : undefined,
+  });
+  
+  return fetch(newRequest);
 }
+```
+
+---
+
+## Saath mein `public/_redirects` bhi delete karo:
+
+`public/_redirects` → **Delete file** → Commit
+
+---
+
+## Phir Commit karo
+
+Dono changes commit hone ke baad **2 minute** wait karo aur yeh open karo:
+```
+https://elegant-la-vie.pages.dev/api/products
