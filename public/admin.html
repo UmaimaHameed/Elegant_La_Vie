@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard — Elegant La Vie</title>
@@ -148,7 +148,7 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
           <input type="text" id="f-name" required placeholder="e.g. Noir Mystique" class="input-field px-4 py-3 rounded-lg text-sm font-serif">
         </div>
         <div>
-          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">PRICE (USD) *</label>
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">PRICE (PKR) *</label>
           <input type="number" id="f-price" required placeholder="285" step="0.01" min="0" class="input-field px-4 py-3 rounded-lg text-sm">
         </div>
         <div>
@@ -248,7 +248,7 @@ async function loadDashboard(){
     const ordersData = await ordersRes.json();
     document.getElementById('stat-products').textContent = statsData.products||0;
     document.getElementById('stat-orders').textContent = statsData.orders||0;
-    document.getElementById('stat-revenue').textContent = '$'+(statsData.revenue||0).toFixed(0);
+    document.getElementById('stat-revenue').textContent = 'Rs. '+(statsData.revenue||0).toFixed(0);
     document.getElementById('stat-customers').textContent = statsData.customers||0;
     const orders = (ordersData.orders||[]).slice(0,5);
     document.getElementById('recent-orders-dash').innerHTML = orders.length ? `
@@ -263,7 +263,7 @@ async function loadDashboard(){
           <tr class="border-b" style="border-color:rgba(201,168,76,.05);">
             <td class="py-3 pr-4 font-display text-xs text-gray-400">#${o.id}</td>
             <td class="py-3 pr-4 font-serif italic text-xs text-gray-400">${o.user_email}</td>
-            <td class="py-3 pr-4 font-display text-sm gold-text">$${o.total_amount?.toFixed(2)}</td>
+            <td class="py-3 pr-4 font-display text-sm gold-text">Rs. ${o.total_amount?.toFixed(2)}</td>
             <td class="py-3"><span class="badge badge-${o.status}">${(o.status||'pending').toUpperCase()}</span></td>
           </tr>`).join('')}
         </tbody>
@@ -298,7 +298,7 @@ function renderAdminProducts(products){
       <div class="p-4">
         <div class="flex justify-between items-start mb-2">
           <h4 class="font-display text-sm gold-text leading-tight">${p.name}</h4>
-          <span class="font-display text-sm gold-text ml-2 whitespace-nowrap">$${p.price}</span>
+          <span class="font-display text-sm gold-text ml-2 whitespace-nowrap">Rs. ${p.price}</span>
         </div>
         <p class="font-serif text-xs text-gray-500 italic mb-1">${p.scent_mood}</p>
         <p class="text-xs text-gray-600 mb-3 line-clamp-1">${p.scent_notes||''}</p>
@@ -322,7 +322,7 @@ async function loadOrders(){
         <td class="py-4 pr-6 font-display text-xs text-gray-400">#${o.id}</td>
         <td class="py-4 pr-6 font-serif italic text-xs text-gray-400">${o.user_email}</td>
         <td class="py-4 pr-6 text-xs text-gray-500 max-w-[200px] truncate">${o.items_summary||'—'}</td>
-        <td class="py-4 pr-6 font-display text-sm gold-text">$${o.total_amount?.toFixed(2)}</td>
+        <td class="py-4 pr-6 font-display text-sm gold-text">Rs. ${o.total_amount?.toFixed(2)}</td>
         <td class="py-4 pr-6"><span class="badge badge-${o.status}">${(o.status||'pending').toUpperCase()}</span></td>
         <td class="py-4 text-xs text-gray-600">${new Date(o.created_at).toLocaleDateString()}</td>
       </tr>`).join('') : '<tr><td colspan="6" class="text-center py-12 font-serif text-gray-500 italic">No orders yet.</td></tr>';
