@@ -137,19 +137,19 @@ function renderCart(){
             <span class="font-display text-sm w-6 text-center">${item.quantity}</span>
             <button onclick="updateQty(${item.id},1)" class="w-7 h-7 rounded-full glass-card flex items-center justify-center text-yellow-400 hover:bg-white hover:bg-opacity-5 transition-colors font-display">+</button>
           </div>
-          <span class="font-display text-lg gold-text">$${(item.price * item.quantity).toFixed(2)}</span>
+          <span class="font-display text-lg gold-text">Rs. ${(item.price * item.quantity).toFixed(2)}</span>
         </div>
       </div>
     </div>
   `).join('');
 
   const subtotal = cart.reduce((s,i)=>s+(i.price*i.quantity),0);
-  document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
-  document.getElementById('total').textContent = '$' + subtotal.toFixed(2);
+  document.getElementById('subtotal').textContent = 'Rs. ' + subtotal.toFixed(2);
+  document.getElementById('total').textContent = 'Rs. ' + subtotal.toFixed(2);
   document.getElementById('summary-items').innerHTML = cart.map(i=>`
     <div class="flex justify-between text-xs text-gray-500">
       <span class="font-serif italic">${i.name} ×${i.quantity}</span>
-      <span>$${(i.price*i.quantity).toFixed(2)}</span>
+      <span>Rs. ${(i.price*i.quantity).toFixed(2)}</span>
     </div>
   `).join('');
 }
