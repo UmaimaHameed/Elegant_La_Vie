@@ -13,18 +13,3 @@ export async function onRequest(context) {
   
   return fetch(newRequest);
 }
-```
-
----
-
-## Saath mein `public/_redirects` bhi delete karo:
-
-`public/_redirects` → **Delete file** → Commit
-
----
-
-## Phir Commit karo
-
-Dono changes commit hone ke baad **2 minute** wait karo aur yeh open karo:
-```
-https://elegant-la-vie.pages.dev/api/products
