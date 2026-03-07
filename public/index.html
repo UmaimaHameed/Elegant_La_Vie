@@ -243,7 +243,7 @@ body::before {
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
         <span class="cart-badge" id="cart-count">0</span>
       </a>
-                        <div class="relative">
+      <div class="relative">
         <a href="login.html" id="auth-link" class="text-xs tracking-[0.2em] uppercase hover:text-yellow-300 transition-colors">Login</a>
         <div id="user-menu" class="hidden">
           <button onclick="toggleUserMenu()" id="user-btn" class="flex items-center gap-1 text-xs tracking-[0.2em] uppercase hover:text-yellow-300 transition-colors">
@@ -297,7 +297,7 @@ body::before {
         <h3 class="font-display text-xl mt-3 mb-1 gold-text" id="hero-name">Noir Mystique</h3>
         <p class="font-serif text-gray-400 text-sm italic mb-3" id="hero-notes">Oud, Amber, Dark Rose</p>
         <div class="flex justify-between items-center">
-          <span class="font-display text-2xl gold-text" id="hero-price">$285</span>
+          <span class="font-display text-2xl gold-text" id="hero-price">Rs. 285</span>
           <button onclick="addToCartFromHero()" class="btn-gold px-5 py-2 text-xs tracking-widest rounded-lg">ADD TO CART</button>
         </div>
       </div>
@@ -447,7 +447,7 @@ body::before {
           </li>
           <li class="flex items-center gap-2">
             <span>✉️</span>
-            <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9bf3fef7f7f4dbfef7fefcfaf5eff7faedf2feb5f8f4f6">[email&#160;protected]</a></span>
+            <span>hello@elegantlavie.com</span>
           </li>
         </ul>
       </div>
@@ -460,39 +460,7 @@ body::before {
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js">
-
-
-// ── Auth
-(function(){
-  var token = localStorage.getItem('elv_token');
-  if(token){
-    var user = JSON.parse(localStorage.getItem('elv_user') || '{}');
-    var al = document.getElementById('auth-link');
-    var um = document.getElementById('user-menu');
-    var un = document.getElementById('user-name-display');
-    var adl = document.getElementById('admin-link');
-    if(al) al.classList.add('hidden');
-    if(um) um.classList.remove('hidden');
-    if(un) un.textContent = (user.name || 'Account').split(' ')[0];
-    if(adl && user.role === 'admin') adl.classList.remove('hidden');
-  }
-})();
-function toggleUserMenu(){ 
-  var d = document.getElementById('user-dropdown');
-  if(d) d.classList.toggle('hidden'); 
-}
-function logoutUser(){ 
-  localStorage.removeItem('elv_token'); 
-  localStorage.removeItem('elv_user'); 
-  window.location.href='index.html'; 
-}
-document.addEventListener('click', function(e){
-  var d = document.getElementById('user-dropdown');
-  var b = document.getElementById('user-btn');
-  if(d && b && !d.contains(e.target) && !b.contains(e.target)) d.classList.add('hidden');
-});
-</script><script>
+<script>
 const API_BASE = '/api';
 
 // ── Cart utilities
@@ -506,15 +474,30 @@ window.addEventListener('scroll', () => {
 });
 
 // ── Auth state
-');
+const token = localStorage.getItem('elv_token');
+if (token) {
+  const user = JSON.parse(localStorage.getItem('elv_user') || '{}');
   document.getElementById('auth-link').classList.add('hidden');
   document.getElementById('user-menu').classList.remove('hidden');
   document.getElementById('user-name-display').textContent = user.name?.split(' ')[0] || 'Account';
-  if(user.role === 'admin') document.getElementById('admin-link').classList.remove('hidden');
+  if(user.role === 'admin') {
+    const al = document.getElementById('admin-link');
+    if(al) al.classList.remove('hidden');
+  }
 }
-
-
-
+function toggleUserMenu(){ 
+  document.getElementById('user-dropdown').classList.toggle('hidden'); 
+}
+function logoutUser(){ 
+  localStorage.removeItem('elv_token'); 
+  localStorage.removeItem('elv_user'); 
+  window.location.href='index.html'; 
+}
+document.addEventListener('click', function(e){
+  const d = document.getElementById('user-dropdown');
+  const b = document.getElementById('user-btn');
+  if(d && b && !d.contains(e.target) && !b.contains(e.target)) d.classList.add('hidden');
+});
 
 // ── Load featured products
 async function loadFeatured() {
@@ -586,4 +569,14 @@ function addToCart(product) {
 function showToast(msg) {
   const t = document.createElement('div');
   t.className = 'fixed bottom-6 right-6 z-50 glass-card px-6 py-4 rounded-xl text-sm font-serif italic';
-  t.style.cssText = 'border-color:r
+  t.style.cssText = 'border-color:rgba(201,168,76,0.4); color:var(--gold-light); animation:fadeUp 0.3s ease;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+updateCartCount();
+loadFeatured();
+</script>
+</body>
+</html>
