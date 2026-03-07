@@ -150,7 +150,7 @@ async function loadProduct(){
     document.getElementById('p-mood').textContent = `✦ ${currentProduct.scent_mood.toUpperCase()} ✦`;
     document.getElementById('p-name').textContent = currentProduct.name;
     document.getElementById('p-desc').textContent = currentProduct.description || '';
-    document.getElementById('p-price').textContent = `$${currentProduct.price}`;
+    document.getElementById('p-price').textContent = `Rs. ${currentProduct.price}`;
     const notes = (currentProduct.scent_notes||'').split(',');
     document.getElementById('p-notes').innerHTML = notes.map(n=>`<span style="display:inline-block;padding:5px 14px;border-radius:16px;background:rgba(26,107,84,0.3);border:1px solid rgba(26,107,84,0.5);font-size:0.75rem;letter-spacing:0.1em;color:rgba(245,240,232,0.7);">${n.trim()}</span>`).join('');
     document.getElementById('loading').classList.add('hidden');
