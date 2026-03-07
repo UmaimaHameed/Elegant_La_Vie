@@ -79,16 +79,42 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
             <span class="font-display text-xl gold-text" id="total">$0</span>
           </div>
           
-          <!-- Gift message -->
+          <!-- Delivery Details Form -->
+          <div class="mb-4">
+            <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">FULL NAME *</label>
+            <input type="text" id="f-fullname" placeholder="Aapka naam" 
+                   class="w-full glass-card p-3 rounded-lg text-sm font-serif text-gray-300 placeholder-gray-600 focus:outline-none focus:border-yellow-600 transition-colors"
+                   style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);">
+          </div>
+          <div class="mb-4">
+            <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">PHONE NUMBER *</label>
+            <input type="tel" id="f-phone" placeholder="03XXXXXXXXX" 
+                   class="w-full glass-card p-3 rounded-lg text-sm font-serif text-gray-300 placeholder-gray-600 focus:outline-none focus:border-yellow-600 transition-colors"
+                   style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);">
+          </div>
+          <div class="mb-4">
+            <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">DELIVERY ADDRESS *</label>
+            <textarea id="f-address" rows="2" placeholder="Ghar ka pura address..." 
+                      class="w-full glass-card p-3 rounded-lg text-sm font-serif text-gray-300 placeholder-gray-600 resize-none focus:outline-none focus:border-yellow-600 transition-colors"
+                      style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);"></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">PAYMENT METHOD *</label>
+            <select id="f-payment" class="w-full glass-card p-3 rounded-lg text-sm font-serif text-gray-300 focus:outline-none focus:border-yellow-600 transition-colors"
+                    style="background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.2);">
+              <option value="cod">💵 Cash on Delivery (COD)</option>
+              <option value="bank">🏦 Bank Transfer</option>
+            </select>
+          </div>
           <div class="mb-6">
             <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">GIFT MESSAGE (Optional)</label>
-            <textarea id="gift-message" rows="2" placeholder="Add a personal note..." 
+            <textarea id="gift-message" rows="2" placeholder="Koi special note..." 
                       class="w-full glass-card p-3 rounded-lg text-sm font-serif italic text-gray-300 placeholder-gray-600 resize-none focus:outline-none focus:border-yellow-600 transition-colors"
                       style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);"></textarea>
           </div>
 
           <button onclick="proceedToCheckout()" id="checkout-btn" class="btn-gold w-full py-4 text-xs tracking-[0.2em] rounded-xl mb-4">
-            PROCEED TO CHECKOUT
+            PLACE ORDER ✦
           </button>
           <a href="products.html" class="block text-center font-display text-xs tracking-[0.2em] text-yellow-800 hover:text-yellow-500 transition-colors">
             ← CONTINUE SHOPPING
@@ -174,11 +200,20 @@ async function proceedToCheckout(){
 
   const email = localStorage.getItem('elv_user') ? JSON.parse(localStorage.getItem('elv_user')).email : null;
   if(!email){
-    // Store redirect intent and go to login
     localStorage.setItem('elv_redirect', 'cart.html');
-    if(confirm('Please login to continue checkout.\n\nGo to login page?')) window.location.href='login.html';
+    if(confirm('Order karne ke liye login karein.\n\nLogin page pe jayen?')) window.location.href='login.html';
     return;
   }
+
+  // Validate form fields
+  const full_name = document.getElementById('f-fullname').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const address = document.getElementById('f-address').value.trim();
+  const payment_method = document.getElementById('f-payment').value;
+
+  if(!full_name){ alert('Apna naam likhein!'); document.getElementById('f-fullname').focus(); return; }
+  if(!phone){ alert('Phone number likhein!'); document.getElementById('f-phone').focus(); return; }
+  if(!address){ alert('Delivery address likhein!'); document.getElementById('f-address').focus(); return; }
 
   const btn = document.getElementById('checkout-btn');
   btn.textContent = 'PROCESSING...';
@@ -191,6 +226,10 @@ async function proceedToCheckout(){
       body: JSON.stringify({
         items: cart,
         email,
+        full_name,
+        phone,
+        address,
+        payment_method,
         gift_message: document.getElementById('gift-message').value
       })
     });
@@ -213,6 +252,13 @@ async function proceedToCheckout(){
 }
 
 renderCart();
+function toggleUserMenu(){ document.getElementById('user-dropdown').classList.toggle('hidden'); }
+function logoutUser(){ localStorage.removeItem('elv_token'); localStorage.removeItem('elv_user'); window.location.href='index.html'; }
+document.addEventListener('click', function(e){
+  const d=document.getElementById('user-dropdown');
+  const b=document.getElementById('user-btn');
+  if(d&&b&&!d.contains(e.target)&&!b.contains(e.target)) d.classList.add('hidden');
+});
 </script>
 </body>
 </html>
