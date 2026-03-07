@@ -243,7 +243,32 @@ body::before {
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
         <span class="cart-badge" id="cart-count">0</span>
       </a>
-      <a href="login.html" id="auth-link" class="text-xs tracking-[0.2em] uppercase hover:text-yellow-300 transition-colors">Login</a>
+      <div class="relative">
+        <div class="relative">
+        <a href="login.html" id="auth-link" class="text-xs tracking-[0.2em] uppercase hover:text-yellow-300 transition-colors">Login</a>
+        <div id="user-menu" class="hidden">
+          <button onclick="toggleUserMenu()" id="user-btn" class="flex items-center gap-1 text-xs tracking-[0.2em] uppercase hover:text-yellow-300 transition-colors">
+            <span id="user-name-display">Account</span>
+            <span style="font-size:0.5rem;">▾</span>
+          </button>
+          <div id="user-dropdown" class="hidden absolute right-0 rounded-xl overflow-hidden" style="top:2rem;min-width:150px;background:rgba(8,22,18,0.98);border:1px solid rgba(201,168,76,0.3);z-index:999;box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+            <a href="account.html" class="block px-5 py-3 text-xs font-display tracking-wider text-yellow-600 hover:bg-white hover:bg-opacity-5 transition-colors border-b" style="border-color:rgba(201,168,76,0.1);">👤 MY ORDERS</a>
+            <a href="admin.html" id="admin-link" class="hidden px-5 py-3 text-xs font-display tracking-wider text-yellow-500 hover:bg-white hover:bg-opacity-5 transition-colors border-b" style="border-color:rgba(201,168,76,0.1);">⚙ ADMIN</a>
+            <button onclick="logoutUser()" class="w-full text-left px-5 py-3 text-xs font-display tracking-wider text-red-400 hover:bg-white hover:bg-opacity-5 transition-colors cursor-pointer" style="background:none;border:none;">✕ LOGOUT</button>
+          </div>
+        </div>
+      </div>
+        <div id="user-menu" class="hidden">
+          <button onclick="toggleUserMenu()" id="user-btn" class="flex items-center gap-1 text-xs tracking-[0.2em] uppercase hover:text-yellow-300 transition-colors">
+            <span id="user-name-display">Account</span>
+            <span style="font-size:0.5rem;">▾</span>
+          </button>
+          <div id="user-dropdown" class="hidden absolute right-0 rounded-xl overflow-hidden" style="top:2rem;min-width:130px;background:rgba(8,22,18,0.98);border:1px solid rgba(201,168,76,0.3);z-index:999;box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+            <a href="admin.html" id="admin-link" class="hidden block px-5 py-3 text-xs font-display tracking-wider text-yellow-600 hover:bg-white hover:bg-opacity-5 transition-colors border-b" style="border-color:rgba(201,168,76,0.1);">⚙ ADMIN</a>
+            <button onclick="logoutUser()" class="w-full text-left px-5 py-3 text-xs font-display tracking-wider text-red-400 hover:bg-white hover:bg-opacity-5 transition-colors cursor-pointer" style="background:none;border:none;">✕ LOGOUT</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
@@ -434,7 +459,7 @@ body::before {
           </li>
           <li class="flex items-center gap-2">
             <span>✉️</span>
-            <span>hello@elegantlavie.com</span>
+            <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9bf3fef7f7f4dbfef7fefcfaf5eff7faedf2feb5f8f4f6">[email&#160;protected]</a></span>
           </li>
         </ul>
       </div>
@@ -447,7 +472,7 @@ body::before {
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const API_BASE = '/api';
 
 // ── Cart utilities
@@ -464,9 +489,26 @@ window.addEventListener('scroll', () => {
 const token = localStorage.getItem('elv_token');
 if (token) {
   const user = JSON.parse(localStorage.getItem('elv_user') || '{}');
-  document.getElementById('auth-link').textContent = user.name?.split(' ')[0] || 'Account';
-  document.getElementById('auth-link').href = user.role === 'admin' ? 'admin.html' : '#';
+  document.getElementById('auth-link').classList.add('hidden');
+  document.getElementById('user-menu').classList.remove('hidden');
+  document.getElementById('user-name-display').textContent = user.name?.split(' ')[0] || 'Account';
+  if(user.role === 'admin') document.getElementById('admin-link').classList.remove('hidden');
 }
+function toggleUserMenu(){
+  document.getElementById('user-dropdown').classList.toggle('hidden');
+}
+function logoutUser(){
+  localStorage.removeItem('elv_token');
+  localStorage.removeItem('elv_user');
+  window.location.href = 'index.html';
+}
+document.addEventListener('click', function(e){
+  const dropdown = document.getElementById('user-dropdown');
+  const btn = document.getElementById('user-btn');
+  if(dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)){
+    dropdown.classList.add('hidden');
+  }
+});
 
 // ── Load featured products
 async function loadFeatured() {
@@ -538,14 +580,4 @@ function addToCart(product) {
 function showToast(msg) {
   const t = document.createElement('div');
   t.className = 'fixed bottom-6 right-6 z-50 glass-card px-6 py-4 rounded-xl text-sm font-serif italic';
-  t.style.cssText = 'border-color:rgba(201,168,76,0.4); color:var(--gold-light); animation:fadeUp 0.3s ease;';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
-}
-
-updateCartCount();
-loadFeatured();
-</script>
-</body>
-</html>
+  t.style.cssText = 'border-color:r
