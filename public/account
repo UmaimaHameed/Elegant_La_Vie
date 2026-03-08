@@ -3,38 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Account — Elegant La Vie</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<title>My Orders — Elegant La Vie</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-:root{--emerald-deep:#0a1f1a;--gold:#c9a84c;--gold-light:#e2c47e;--gold-dim:#8a6f2e;--cream:#f5f0e8;--glass:rgba(255,255,255,0.04);--glass-border:rgba(201,168,76,0.2);}
+:root{--emerald-deep:#0a1f1a;--gold:#c9a84c;--gold-light:#e2c47e;--gold-dim:#8a6f2e;--cream:#f5f0e8;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',sans-serif;}
-.font-display{font-family:'Cinzel',serif;}.font-serif{font-family:'Cormorant Garamond',serif;}
+body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',sans-serif;min-height:100vh;}
+.font-display{font-family:'Cinzel',serif;}
+.font-serif{font-family:'Cormorant Garamond',serif;}
 .gold-text{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.glass-card{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);}
-.gold-line{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light),var(--gold));background-size:200% auto;color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.15em;font-weight:600;transition:all .3s;}
-.btn-gold:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 10px 30px rgba(201,168,76,.4);}
+.glass-card{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);backdrop-filter:blur(20px);}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light));color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.15em;font-weight:600;transition:all .3s;display:inline-block;}
 .navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,31,26,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(201,168,76,.15);}
 .cart-badge{position:absolute;top:-6px;right:-6px;background:var(--gold);color:var(--emerald-deep);width:18px;height:18px;border-radius:50%;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
-.badge-pending{background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.3);color:#fbbf24;}
-.badge-confirmed{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#4ade80;}
-.badge-delivered{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;}
-.badge-demo{background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);color:#c4b5fd;}
-::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--emerald-deep);}::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px;}
 </style>
 </head>
 <body>
 
 <nav class="navbar px-6 py-5">
-  <div class="max-w-7xl mx-auto flex items-center justify-between">
+  <div class="max-w-5xl mx-auto flex items-center justify-between">
     <a href="index.html" class="font-display text-xl tracking-[0.3em] gold-text">ELEGANT LA VIE</a>
-    <div class="hidden md:flex items-center gap-8 text-xs tracking-[0.2em] uppercase font-light">
-      <a href="index.html" class="hover:text-yellow-300 transition-colors">Home</a>
-      <a href="products.html" class="hover:text-yellow-300 transition-colors">Collection</a>
-    </div>
-    <div class="flex items-center gap-5">
+    <div class="flex items-center gap-6">
+      <a href="products.html" class="text-xs tracking-[0.2em] uppercase hover:text-yellow-300 transition-colors">Collection</a>
       <a href="cart.html" class="relative hover:opacity-80 transition-opacity">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
         <span class="cart-badge" id="cart-count">0</span>
@@ -45,24 +36,23 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
 </nav>
 
 <div class="pt-32 pb-20 px-6 min-h-screen">
-  <div class="max-w-4xl mx-auto">
+  <div class="max-w-3xl mx-auto">
 
-    <!-- Header -->
-    <div class="text-center mb-12">
-      <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-4">✦ WELCOME BACK ✦</p>
-      <h1 class="font-display text-5xl gold-text mb-2" id="account-name">My Account</h1>
+    <div class="text-center mb-10">
+      <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-3">✦ WELCOME BACK ✦</p>
+      <h1 class="font-display text-4xl gold-text mb-2" id="account-name">My Account</h1>
       <p class="font-serif text-gray-500 italic text-sm" id="account-email"></p>
-      <div class="gold-line w-24 mx-auto mt-6"></div>
+      <div style="height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);" class="w-24 mx-auto mt-5"></div>
     </div>
 
     <!-- Stats -->
-    <div class="grid grid-cols-3 gap-4 mb-12">
+    <div class="grid grid-cols-3 gap-4 mb-10">
       <div class="glass-card rounded-xl p-5 text-center">
         <p class="font-display text-3xl gold-text" id="total-orders">0</p>
         <p class="font-serif text-xs text-gray-500 italic mt-1">Total Orders</p>
       </div>
       <div class="glass-card rounded-xl p-5 text-center">
-        <p class="font-display text-3xl gold-text" id="total-spent">Rs. 0</p>
+        <p class="font-display text-2xl gold-text" id="total-spent">Rs. 0</p>
         <p class="font-serif text-xs text-gray-500 italic mt-1">Total Spent</p>
       </div>
       <div class="glass-card rounded-xl p-5 text-center">
@@ -71,27 +61,26 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
       </div>
     </div>
 
-    <!-- Orders -->
+    <!-- Orders List -->
     <div class="glass-card rounded-2xl p-8">
-      <h2 class="font-display text-lg gold-text tracking-wider mb-6">MY ORDERS</h2>
+      <h2 class="font-display text-sm tracking-[0.3em] gold-text mb-6">MY ORDERS</h2>
       <div id="orders-container">
-        <div class="text-center py-12">
+        <div class="text-center py-10">
           <div class="w-8 h-8 border-2 border-yellow-700 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
           <p class="font-serif text-gray-500 italic">Loading your orders...</p>
         </div>
       </div>
     </div>
 
-    <!-- Back to shopping -->
     <div class="text-center mt-8">
-      <a href="products.html" class="btn-gold px-10 py-4 text-xs tracking-[0.25em] inline-block rounded-lg">CONTINUE SHOPPING ✦</a>
+      <a href="products.html" class="btn-gold px-10 py-4 text-xs tracking-[0.25em] rounded-lg">CONTINUE SHOPPING ✦</a>
     </div>
 
   </div>
 </div>
 
-<footer class="border-t py-10 px-6 text-center" style="border-color:rgba(201,168,76,0.15);background:rgba(5,15,12,0.8);">
-  <p class="font-display text-xl tracking-[0.3em] gold-text mb-2">ELEGANT LA VIE</p>
+<footer class="border-t py-8 px-6 text-center" style="border-color:rgba(201,168,76,0.15);background:rgba(5,15,12,0.8);">
+  <p class="font-display text-lg tracking-[0.3em] gold-text mb-2">ELEGANT LA VIE</p>
   <p class="text-xs text-gray-600">📞 03008206118 &nbsp;|&nbsp; 💬 WhatsApp: 03008206118</p>
 </footer>
 
@@ -99,81 +88,78 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
 function getCart(){ try{ return JSON.parse(localStorage.getItem('elv_cart')||'[]'); }catch{ return []; } }
 function updateCartCount(){ document.getElementById('cart-count').textContent = getCart().reduce((s,i)=>s+i.quantity,0); }
 
-// Auth check
-const token = localStorage.getItem('elv_token');
-const user = JSON.parse(localStorage.getItem('elv_user')||'{}');
-if(!token){ 
-  window.location.href='login.html'; 
-} else {
-  document.getElementById('account-name').textContent = user.name || 'My Account';
-  document.getElementById('account-email').textContent = user.email || '';
-}
-
 function logoutUser(){
   localStorage.removeItem('elv_token');
   localStorage.removeItem('elv_user');
   window.location.href='index.html';
 }
 
-async function loadOrders(){
+window.addEventListener('DOMContentLoaded', function(){
+  var token = localStorage.getItem('elv_token');
+  if(!token){
+    window.location.href='login.html';
+    return;
+  }
+
+  var user = {};
+  try{ user = JSON.parse(localStorage.getItem('elv_user')||'{}'); }catch(e){}
+
+  document.getElementById('account-name').textContent = user.name || 'My Account';
+  document.getElementById('account-email').textContent = user.email || '';
+
+  updateCartCount();
+  loadOrders(token);
+});
+
+async function loadOrders(token){
   try{
-    const res = await fetch('/api/my-orders', {
+    var res = await fetch('/api/my-orders', {
       headers:{ 'Authorization': 'Bearer ' + token }
     });
-    const data = await res.json();
-    const orders = data.orders || [];
+    var data = await res.json();
+    var orders = data.orders || [];
 
-    // Stats
     document.getElementById('total-orders').textContent = orders.length;
-    const spent = orders.reduce((s,o)=>s+(o.total_amount||0),0);
-    document.getElementById('total-spent').textContent = 'Rs. ' + spent.toFixed(0);
-    const pending = orders.filter(o=>o.status==='pending'||o.status==='demo').length;
+    var spent = orders.reduce(function(s,o){ return s+(o.total_amount||0); },0);
+    document.getElementById('total-spent').textContent = 'Rs. ' + Math.round(spent);
+    var pending = orders.filter(function(o){ return o.status==='pending'; }).length;
     document.getElementById('pending-orders').textContent = pending;
 
     if(!orders.length){
-      document.getElementById('orders-container').innerHTML = `
-        <div class="text-center py-12">
-          <div class="text-5xl mb-4">🛒</div>
-          <p class="font-serif text-gray-500 italic text-lg">No orders placed yet</p>
-          <a href="products.html" class="inline-block mt-4 font-display text-xs tracking-wider text-yellow-600 hover:text-yellow-400 transition-colors">Browse Collection →</a>
-        </div>`;
+      document.getElementById('orders-container').innerHTML = '<div class="text-center py-10"><div class="text-5xl mb-4">🛒</div><p class="font-serif text-gray-500 italic text-lg">No orders placed yet</p><a href="products.html" class="inline-block mt-4 font-display text-xs tracking-wider text-yellow-600 hover:text-yellow-400">Browse Collection →</a></div>';
       return;
     }
 
-    document.getElementById('orders-container').innerHTML = orders.map(o => {
-      const date = new Date(o.created_at).toLocaleDateString('en-PK', {day:'numeric',month:'short',year:'numeric'});
-      const statusClass = o.status==='delivered' ? 'badge-delivered' : o.status==='confirmed' ? 'badge-confirmed' : 'badge-pending';
-      const statusText = o.status==='delivered' ? '✓ Delivered' : o.status==='confirmed' ? '✓ Confirmed' : '⏳ Pending';
-      return `
-        <div class="border-b py-6" style="border-color:rgba(201,168,76,0.1);">
-          <div class="flex justify-between items-start mb-3 flex-wrap gap-2">
-            <div>
-              <span class="font-display text-xs text-gray-500 tracking-wider">ORDER #${o.id}</span>
-              <span class="font-serif text-xs text-gray-600 italic ml-3">${date}</span>
-            </div>
-            <span class="text-xs px-3 py-1 rounded-full font-display tracking-wider ${statusClass}">${statusText}</span>
-          </div>
-          <p class="font-serif text-sm text-gray-400 italic mb-3">${o.items_summary || 'Order details'}</p>
-          <div class="flex justify-between items-center">
-            <div class="text-xs text-gray-600">
-              ${o.payment_method ? `<span class="mr-3">💳 ${o.payment_method==='cod'?'Cash on Delivery':'Bank Transfer'}</span>` : ''}
-              ${o.address ? `<span>📍 ${o.address.substring(0,40)}...</span>` : ''}
-            </div>
-            <span class="font-display text-lg gold-text">Rs. ${o.total_amount?.toFixed(0)}</span>
-          </div>
-        </div>`;
-    }).join('');
+    var html = '';
+    for(var i=0; i<orders.length; i++){
+      var o = orders[i];
+      var date = new Date(o.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+      var statusColor = o.status==='delivered' ? '#a5b4fc' : o.status==='confirmed' || o.status==='shipped' ? '#4ade80' : '#fbbf24';
+      var statusBg = o.status==='delivered' ? 'rgba(99,102,241,0.15)' : o.status==='confirmed' || o.status==='shipped' ? 'rgba(34,197,94,0.15)' : 'rgba(234,179,8,0.15)';
+      var statusText = (o.status||'pending').toUpperCase();
+      var payment = o.payment_method==='cod' ? 'Cash on Delivery' : o.payment_method==='bank' ? 'Bank Transfer' : (o.payment_method||'');
+      html += '<div style="border-bottom:1px solid rgba(201,168,76,0.1);padding:20px 0;">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap;gap:8px;">';
+      html += '<div><span class="font-display" style="font-size:11px;color:#9ca3af;letter-spacing:0.15em;">ORDER #'+o.id+'</span>';
+      html += '<span class="font-serif" style="font-size:11px;color:#6b7280;font-style:italic;margin-left:12px;">'+date+'</span></div>';
+      html += '<span class="font-display" style="font-size:10px;padding:4px 12px;border-radius:20px;letter-spacing:0.1em;background:'+statusBg+';color:'+statusColor+';">'+statusText+'</span>';
+      html += '</div>';
+      html += '<p class="font-serif" style="font-size:13px;color:#9ca3af;font-style:italic;margin-bottom:10px;">'+(o.items_summary||'Order details')+'</p>';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
+      html += '<div style="font-size:11px;color:#6b7280;">';
+      if(payment) html += '<span style="margin-right:12px;">💳 '+payment+'</span>';
+      if(o.address) html += '<span>📍 '+o.address.substring(0,35)+'...</span>';
+      html += '</div>';
+      html += '<span class="font-display gold-text" style="font-size:18px;">Rs. '+Math.round(o.total_amount||0)+'</span>';
+      html += '</div></div>';
+    }
+    document.getElementById('orders-container').innerHTML = html;
 
   }catch(e){
-    document.getElementById('orders-container').innerHTML = `
-      <div class="text-center py-8">
-        <p class="font-serif text-gray-500 italic">Could not load orders. Please try again.</p>
-      </div>`;
+    document.getElementById('orders-container').innerHTML = '<div class="text-center py-8"><p class="font-serif text-gray-500 italic">Could not load orders. Please try again.</p></div>';
+    console.error('Orders error:', e);
   }
 }
-
-updateCartCount();
-loadOrders();
 </script>
 </body>
 </html>
