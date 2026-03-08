@@ -98,12 +98,10 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
               <option value="bank">🏦 Bank Transfer</option>
             </select>
           </div>
-          <!-- Gift message -->
           <div class="mb-6">
             <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">GIFT MESSAGE (Optional)</label>
             <textarea id="gift-message" rows="2" placeholder="Koi special note..." class="w-full glass-card p-3 rounded-lg text-sm font-serif italic text-gray-300 placeholder-gray-600 resize-none focus:outline-none" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);"></textarea>
           </div>
-
           <button onclick="proceedToCheckout()" id="checkout-btn" class="btn-gold w-full py-4 text-xs tracking-[0.2em] rounded-xl mb-4">
             PLACE ORDER ✦
           </button>
@@ -154,7 +152,7 @@ function renderCart(){
             <span class="font-display text-sm w-6 text-center">${item.quantity}</span>
             <button onclick="updateQty(${item.id},1)" class="w-7 h-7 rounded-full glass-card flex items-center justify-center text-yellow-400 hover:bg-white hover:bg-opacity-5 transition-colors font-display">+</button>
           </div>
-          <span class="font-display text-lg gold-text">Rs. ${(item.price * item.quantity).toFixed(2)}</span>
+          <span class="font-display text-lg gold-text">$${(item.price * item.quantity).toFixed(2)}</span>
         </div>
       </div>
     </div>
@@ -166,7 +164,7 @@ function renderCart(){
   document.getElementById('summary-items').innerHTML = cart.map(i=>`
     <div class="flex justify-between text-xs text-gray-500">
       <span class="font-serif italic">${i.name} ×${i.quantity}</span>
-      <span>Rs. ${(i.price*i.quantity).toFixed(2)}</span>
+      <span>$${(i.price*i.quantity).toFixed(2)}</span>
     </div>
   `).join('');
 }
@@ -220,38 +218,22 @@ async function proceedToCheckout(){
       })
     });
     const data = await res.json();
-    if(data.checkout_url) {
-      window.location.href = data.checkout_url;
-    } else if(data.success && data.demo) {
+    if(data.success) {
       localStorage.removeItem('elv_cart');
-      localStorage.removeItem('elv_cart'); window.location.href = `checkout.html?success=true&order_id=${data.order_id}`;
+      window.location.href = 'checkout.html?success=true&order_id=' + data.order_id;
     } else {
       alert('Checkout failed: ' + (data.error||'Unknown error'));
-      btn.textContent='PROCEED TO CHECKOUT';
+      btn.textContent='PLACE ORDER ✦';
       btn.disabled=false;
     }
   } catch(e) {
     alert('Network error. Please try again.');
-    btn.textContent='PROCEED TO CHECKOUT';
+    btn.textContent='PLACE ORDER ✦';
     btn.disabled=false;
   }
 }
 
 renderCart();
-
-function toggleUserMenu(){ 
-  document.getElementById('user-dropdown').classList.toggle('hidden'); 
-}
-function logoutUser(){ 
-  localStorage.removeItem('elv_token'); 
-  localStorage.removeItem('elv_user'); 
-  window.location.href='index.html'; 
-}
-document.addEventListener('click', function(e){
-  const d = document.getElementById('user-dropdown');
-  const b = document.getElementById('user-btn');
-  if(d && b && !d.contains(e.target) && !b.contains(e.target)) d.classList.add('hidden');
-});
 </script>
 </body>
 </html>
