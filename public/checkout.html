@@ -15,6 +15,7 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
 .gold-text{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .glass-card{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);backdrop-filter:blur(20px);}
 .btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light));color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.15em;font-weight:600;transition:all .3s;}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(201,168,76,.4);}
 @keyframes scaleIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .anim-1{animation:scaleIn .8s cubic-bezier(.34,1.56,.64,1) forwards;}
@@ -30,31 +31,35 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
 </nav>
 
 <div class="flex-1 flex items-center justify-center px-6 py-20">
-  <div id="success-state" class="text-center max-w-lg w-full">
+  <div class="text-center max-w-lg w-full">
     <div class="anim-1 w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center" style="background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border:2px solid rgba(201,168,76,0.4);">
       <svg class="w-12 h-12 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/>
       </svg>
     </div>
     <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-4 anim-2">✦ ORDER CONFIRMED ✦</p>
-    <h1 class="font-display text-4xl md:text-5xl gold-text mb-4 anim-2">Thank You!</h1>
+    <h1 class="font-display text-4xl md:text-5xl gold-text mb-4 anim-2">Thank You</h1>
     <div style="height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);" class="w-24 mx-auto mb-6"></div>
-    <p class="font-serif text-gray-300 text-xl italic leading-relaxed mb-4 anim-3">Aapka order successfully place ho gaya hai!</p>
+    <p class="font-serif text-gray-300 text-xl italic leading-relaxed mb-4 anim-3">Your luxury fragrance is being prepared with the utmost care.</p>
     <p class="font-serif text-gray-500 text-sm italic anim-3" id="order-ref"></p>
     <div class="glass-card rounded-2xl p-6 my-8 anim-3 text-left">
-      <p class="font-display text-xs tracking-[0.3em] text-yellow-700 mb-4">NEXT STEPS</p>
+      <p class="font-display text-xs tracking-[0.3em] text-yellow-700 mb-4">WHAT HAPPENS NEXT</p>
       <div class="space-y-3">
         <div class="flex gap-3 text-sm">
           <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">Humara team aapko 24 ghante mein contact karega</p>
+          <p class="font-serif text-gray-400 italic">Our team will contact you within 24 hours to confirm your order</p>
         </div>
         <div class="flex gap-3 text-sm">
           <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">Order 2-3 business days mein deliver hoga</p>
+          <p class="font-serif text-gray-400 italic">Your order will be delivered within 2–3 business days</p>
         </div>
         <div class="flex gap-3 text-sm">
           <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">WhatsApp: 03008206118 pe track kar sakte hain</p>
+          <p class="font-serif text-gray-400 italic">Track your order via WhatsApp: 03008206118</p>
+        </div>
+        <div class="flex gap-3 text-sm">
+          <span class="text-yellow-500 mt-0.5">✦</span>
+          <p class="font-serif text-gray-400 italic">Complimentary luxury gift wrapping included</p>
         </div>
       </div>
     </div>
@@ -71,7 +76,6 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
 </footer>
 
 <script>
-// Just read order_id from URL - no API calls!
 const params = new URLSearchParams(window.location.search);
 const orderId = params.get('order_id');
 if(orderId){
