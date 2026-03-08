@@ -102,10 +102,12 @@ function updateCartCount(){ document.getElementById('cart-count').textContent = 
 // Auth check
 const token = localStorage.getItem('elv_token');
 const user = JSON.parse(localStorage.getItem('elv_user')||'{}');
-if(!token){ window.location.href='login.html'; }
-
-document.getElementById('account-name').textContent = user.name || 'My Account';
-document.getElementById('account-email').textContent = user.email || '';
+if(!token){ 
+  window.location.href='login.html'; 
+} else {
+  document.getElementById('account-name').textContent = user.name || 'My Account';
+  document.getElementById('account-email').textContent = user.email || '';
+}
 
 function logoutUser(){
   localStorage.removeItem('elv_token');
@@ -132,8 +134,8 @@ async function loadOrders(){
       document.getElementById('orders-container').innerHTML = `
         <div class="text-center py-12">
           <div class="text-5xl mb-4">🛒</div>
-          <p class="font-serif text-gray-500 italic text-lg">Abhi tak koi order nahi kiya</p>
-          <a href="products.html" class="inline-block mt-4 font-display text-xs tracking-wider text-yellow-600 hover:text-yellow-400 transition-colors">Collection dekhein →</a>
+          <p class="font-serif text-gray-500 italic text-lg">No orders placed yet</p>
+          <a href="products.html" class="inline-block mt-4 font-display text-xs tracking-wider text-yellow-600 hover:text-yellow-400 transition-colors">Browse Collection →</a>
         </div>`;
       return;
     }
@@ -165,7 +167,7 @@ async function loadOrders(){
   }catch(e){
     document.getElementById('orders-container').innerHTML = `
       <div class="text-center py-8">
-        <p class="font-serif text-gray-500 italic">Orders load nahi ho sake. Baad mein try karein.</p>
+        <p class="font-serif text-gray-500 italic">Could not load orders. Please try again.</p>
       </div>`;
   }
 }
