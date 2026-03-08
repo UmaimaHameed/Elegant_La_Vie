@@ -1,112 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Checkout — Elegant La Vie</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-:root{--emerald-deep:#0a1f1a;--gold:#c9a84c;--gold-light:#e2c47e;--gold-dim:#8a6f2e;--cream:#f5f0e8;--glass:rgba(255,255,255,0.04);--glass-border:rgba(201,168,76,0.2);}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
-.font-display{font-family:'Cinzel',serif;}.font-serif{font-family:'Cormorant Garamond',serif;}
-.gold-text{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.glass-card{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);}
-.gold-line{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light),var(--gold));background-size:200% auto;color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.15em;font-weight:600;transition:all .3s;}
-.btn-gold:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 10px 30px rgba(201,168,76,.4);}
-@keyframes scaleIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.anim-1{animation:scaleIn .8s cubic-bezier(.34,1.56,.64,1) forwards;}
-.anim-2{animation:fadeUp .6s ease .3s both;}
-.anim-3{animation:fadeUp .6s ease .5s both;}
-</style>
-</head>
-<body>
-<nav class="px-6 py-5 border-b" style="border-color:rgba(201,168,76,0.15);background:rgba(10,31,26,0.95);">
-  <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <a href="index.html" class="font-display text-xl tracking-[0.3em] gold-text">ELEGANT LA VIE</a>
-  </div>
-</nav>
-
-<div class="flex-1 flex items-center justify-center px-6 py-20" id="main-content">
-  <!-- Loading -->
-  <!-- <div id="loading-state" class="text-center">
-    <div class="w-12 h-12 border-2 border-yellow-700 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
-    <p class="font-serif text-gray-500 italic">Processing your order...</p>
-  </div> -->
-
-  <!-- Success -->
-  <!-- <div id="success-state" class="hidden text-center max-w-lg">
-    <div class="anim-1 w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center" style="background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border:2px solid rgba(201,168,76,0.4);">
-      <svg class="w-12 h-12 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/>
-      </svg>
-    </div>
-    <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-4 anim-2">✦ ORDER CONFIRMED ✦</p>
-    <h1 class="font-display text-4xl md:text-5xl gold-text mb-4 anim-2">Thank You</h1>
-    <div style="height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);" class="w-24 mx-auto mb-6"></div>
-    <p class="font-serif text-gray-300 text-xl italic leading-relaxed mb-4 anim-3">Your luxury fragrances are being prepared with the utmost care.</p>
-    <p class="font-serif text-gray-500 text-sm italic anim-3" id="order-ref"></p>
-    <div class="glass-card rounded-2xl p-6 my-8 anim-3">
-      <p class="font-display text-xs tracking-[0.3em] text-yellow-700 mb-3">WHAT HAPPENS NEXT</p>
-      <div class="space-y-3 text-left">
-        <div class="flex gap-3 text-sm">
-          <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">A confirmation email will arrive shortly</p>
-        </div>
-        <div class="flex gap-3 text-sm">
-          <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">Your order will be shipped within 2-3 business days</p>
-        </div>
-        <div class="flex gap-3 text-sm">
-          <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">Complimentary gift wrapping included</p>
-        </div>
-      </div>
-    </div>
-    <div class="flex gap-4 justify-center anim-3">
-      <a href="products.html" class="btn-gold px-8 py-4 text-xs tracking-[0.2em] rounded-xl inline-block">CONTINUE SHOPPING</a>
-      <a href="index.html" class="glass-card px-8 py-4 text-xs font-display tracking-[0.2em] text-yellow-500 hover:border-yellow-500 transition-all rounded-xl inline-block">HOME</a>
-    </div>
-  </div>
-
-  <!-- Cancelled -->
-  <!-- <div id="cancelled-state" class="hidden text-center max-w-lg">
-    <div class="w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center" style="background:rgba(239,68,68,0.1);border:2px solid rgba(239,68,68,0.3);">
-      <svg class="w-12 h-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </div>
-    <h1 class="font-display text-4xl gold-text mb-4">Order Cancelled</h1>
-    <p class="font-serif text-gray-400 italic mb-8">Your payment was not completed. Your cart has been saved.</p>
-    <a href="cart.html" class="btn-gold px-10 py-4 text-xs tracking-[0.2em] rounded-xl inline-block">RETURN TO CART</a>
-  </div>
-</div>
-
-<footer class="border-t py-8 px-6 text-center" style="border-color:rgba(201,168,76,0.15);background:rgba(5,15,12,0.8);">
-  <p class="font-display text-lg tracking-[0.3em] gold-text mb-2">ELEGANT LA VIE</p>
-  <p class="text-xs text-gray-600">📞 03008206118 &nbsp;|&nbsp; 💬 WhatsApp: 03008206118</p>
-</footer>
-
-<script>
-const params = new URLSearchParams(window.location.search);
-document.getElementById('loading-state').classList.add('hidden');
-if(params.get('success')){
-  document.getElementById('success-state').classList.remove('hidden');
-  const orderId = params.get('order_id') || params.get('session_id');
-  if(orderId) document.getElementById('order-ref').textContent = `Reference: #${orderId}`;
-  localStorage.removeItem('elv_cart');
-} else if(params.get('cancelled')){
-  document.getElementById('cancelled-state').classList.remove('hidden');
-} else {
-  window.location.href='index.html';
-}
-</script>
-</body>
-</html> --> --> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -163,15 +54,15 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
       <div class="space-y-3 text-left">
         <div class="flex gap-3 text-sm">
           <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">Your order has been placed with Cash on Delivery</p>
+          <p class="font-serif text-gray-400 italic">A confirmation email will arrive shortly</p>
         </div>
         <div class="flex gap-3 text-sm">
           <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">Our team will contact you shortly to confirm</p>
+          <p class="font-serif text-gray-400 italic">Your order will be shipped within 2-3 business days</p>
         </div>
         <div class="flex gap-3 text-sm">
           <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">Pay when your order arrives</p>
+          <p class="font-serif text-gray-400 italic">Complimentary gift wrapping included</p>
         </div>
       </div>
     </div>
@@ -181,69 +72,16 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
     </div>
   </div>
 
-  <!-- Cancelled / Error -->
+  <!-- Cancelled -->
   <div id="cancelled-state" class="hidden text-center max-w-lg">
     <div class="w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center" style="background:rgba(239,68,68,0.1);border:2px solid rgba(239,68,68,0.3);">
       <svg class="w-12 h-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
       </svg>
     </div>
-    <h1 class="font-display text-4xl gold-text mb-4">Order Not Placed</h1>
-    <p class="font-serif text-gray-400 italic mb-8" id="error-message">Something went wrong. Your cart has been saved.</p>
+    <h1 class="font-display text-4xl gold-text mb-4">Order Cancelled</h1>
+    <p class="font-serif text-gray-400 italic mb-8">Your payment was not completed. Your cart has been saved.</p>
     <a href="cart.html" class="btn-gold px-10 py-4 text-xs tracking-[0.2em] rounded-xl inline-block">RETURN TO CART</a>
-  </div>
-
-  <!-- Checkout Form -->
-  <div id="checkout-form" class="hidden w-full max-w-4xl glass-card rounded-3xl p-8 md:p-12">
-    <h1 class="font-display text-4xl gold-text mb-8 text-center">Checkout</h1>
-
-    <form id="order-form" class="space-y-8">
-      <!-- Customer Info -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
-          <input type="text" id="full_name" required class="w-full px-4 py-3 bg-transparent border border-gold-dim rounded-xl text-cream focus:outline-none focus:border-gold-light">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
-          <input type="tel" id="phone" required class="w-full px-4 py-3 bg-transparent border border-gold-dim rounded-xl text-cream focus:outline-none focus:border-gold-light">
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Delivery Address</label>
-        <textarea id="address" rows="3" required class="w-full px-4 py-3 bg-transparent border border-gold-dim rounded-xl text-cream focus:outline-none focus:border-gold-light"></textarea>
-      </div>
-
-      <!-- Payment Method -->
-      <div>
-        <label class="block text-sm font-medium text-gray-300 mb-3">Payment Method</label>
-        <div class="space-y-4">
-          <label class="flex items-center glass-card p-4 rounded-xl cursor-pointer hover:border-gold-light transition-all">
-            <input type="radio" name="payment_method" value="cod" checked class="w-5 h-5 text-gold">
-            <span class="ml-3 text-cream">Cash on Delivery (COD) - Pay when you receive</span>
-          </label>
-          <label class="flex items-center glass-card p-4 rounded-xl cursor-pointer hover:border-gold-light transition-all opacity-60">
-            <input type="radio" name="payment_method" value="bank" disabled class="w-5 h-5 text-gold">
-            <span class="ml-3 text-gray-500">Bank Transfer (Coming Soon)</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Order Summary -->
-      <div class="glass-card rounded-2xl p-6">
-        <h3 class="font-display text-lg gold-text mb-4">Order Summary</h3>
-        <div id="order-summary" class="space-y-3 text-sm"></div>
-        <div class="mt-6 pt-4 border-t border-gold-dim/30">
-          <div class="flex justify-between text-lg font-medium">
-            <span>Total</span>
-            <span id="total-amount">PKR 0</span>
-          </div>
-        </div>
-      </div>
-
-      <button type="submit" class="w-full btn-gold py-5 text-base tracking-[0.2em] rounded-xl">PLACE ORDER</button>
-    </form>
   </div>
 </div>
 
@@ -253,95 +91,17 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
 </footer>
 
 <script>
-// Cart from localStorage
-let cart = JSON.parse(localStorage.getItem('elv_cart')) || [];
-
-// Show/hide sections
-function showLoading() { document.getElementById('loading-state').classList.remove('hidden'); }
-function hideLoading() { document.getElementById('loading-state').classList.add('hidden'); }
-function showSuccess(orderId) {
+const params = new URLSearchParams(window.location.search);
+document.getElementById('loading-state').classList.add('hidden');
+if(params.get('success')){
   document.getElementById('success-state').classList.remove('hidden');
-  document.getElementById('order-ref').textContent = `Reference: #${orderId}`;
+  const orderId = params.get('order_id') || params.get('session_id');
+  if(orderId) document.getElementById('order-ref').textContent = `Reference: #${orderId}`;
   localStorage.removeItem('elv_cart');
-}
-function showError(msg) {
+} else if(params.get('cancelled')){
   document.getElementById('cancelled-state').classList.remove('hidden');
-  document.getElementById('error-message').textContent = msg;
-}
-
-// Render order summary
-function renderSummary() {
-  if (cart.length === 0) {
-    window.location.href = 'cart.html';
-    return;
-  }
-
-  let subtotal = 0;
-  const summaryDiv = document.getElementById('order-summary');
-  summaryDiv.innerHTML = '';
-
-  cart.forEach(item => {
-    const price = parseFloat(item.price) || 0;
-    const qty = parseInt(item.quantity) || 1;
-    subtotal += price * qty;
-
-    summaryDiv.innerHTML += `
-      <div class="flex justify-between text-gray-300">
-        <span>${item.name} × ${qty}</span>
-        <span>PKR ${ (price * qty).toLocaleString() }</span>
-      </div>
-    `;
-  });
-
-  document.getElementById('total-amount').textContent = `PKR ${subtotal.toLocaleString()}`;
-}
-
-// Submit order
-document.getElementById('order-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  showLoading();
-
-  const formData = {
-    full_name: document.getElementById('full_name').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
-    address: document.getElementById('address').value.trim(),
-    payment_method: document.querySelector('input[name="payment_method"]:checked').value,
-    items: cart.map(item => ({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity
-    })),
-    total: cart.reduce((sum, i) => sum + (parseFloat(i.price) || 0) * (parseInt(i.quantity) || 1), 0)
-  };
-
-  try {
-    const res = await fetch('/api/order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.success) {
-      showSuccess(data.order_id || 'COD-' + Date.now());
-    } else {
-      showError(data.error || 'Failed to place order. Please try again.');
-    }
-  } catch (err) {
-    showError('Network error. Please check your connection.');
-  } finally {
-    hideLoading();
-  }
-});
-
-// Init
-if (cart.length === 0) {
-  window.location.href = 'cart.html';
 } else {
-  document.getElementById('checkout-form').classList.remove('hidden');
-  renderSummary();
+  window.location.href='index.html';
 }
 </script>
 </body>
