@@ -3,19 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Checkout — Elegant La Vie</title>
+<title>Order Confirmed — Elegant La Vie</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-:root{--emerald-deep:#0a1f1a;--gold:#c9a84c;--gold-light:#e2c47e;--gold-dim:#8a6f2e;--cream:#f5f0e8;--glass:rgba(255,255,255,0.04);--glass-border:rgba(201,168,76,0.2);}
+:root{--emerald-deep:#0a1f1a;--gold:#c9a84c;--gold-light:#e2c47e;--gold-dim:#8a6f2e;--cream:#f5f0e8;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
-.font-display{font-family:'Cinzel',serif;}.font-serif{font-family:'Cormorant Garamond',serif;}
+.font-display{font-family:'Cinzel',serif;}
+.font-serif{font-family:'Cormorant Garamond',serif;}
 .gold-text{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.glass-card{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);}
-.gold-line{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light),var(--gold));background-size:200% auto;color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.15em;font-weight:600;transition:all .3s;}
-.btn-gold:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 10px 30px rgba(201,168,76,.4);}
+.glass-card{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);backdrop-filter:blur(20px);}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light));color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.15em;font-weight:600;transition:all .3s;}
 @keyframes scaleIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .anim-1{animation:scaleIn .8s cubic-bezier(.34,1.56,.64,1) forwards;}
@@ -30,58 +29,39 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
   </div>
 </nav>
 
-<div class="flex-1 flex items-center justify-center px-6 py-20" id="main-content">
-  <!-- Loading -->
-  <div id="loading-state" class="text-center">
-    <div class="w-12 h-12 border-2 border-yellow-700 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
-    <p class="font-serif text-gray-500 italic">Processing your order...</p>
-  </div>
-
-  <!-- Success -->
-  <div id="success-state" class="hidden text-center max-w-lg">
+<div class="flex-1 flex items-center justify-center px-6 py-20">
+  <div id="success-state" class="text-center max-w-lg w-full">
     <div class="anim-1 w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center" style="background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border:2px solid rgba(201,168,76,0.4);">
       <svg class="w-12 h-12 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/>
       </svg>
     </div>
     <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-4 anim-2">✦ ORDER CONFIRMED ✦</p>
-    <h1 class="font-display text-4xl md:text-5xl gold-text mb-4 anim-2">Thank You</h1>
-    <div style="height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);" class="w-24 mx-auto mb-6"></div>
-    <p class="font-serif text-gray-300 text-xl italic leading-relaxed mb-4 anim-3">Your luxury fragrances are being prepared with the utmost care.</p>
+    <h1 class="font-display text-4xl md:text-5xl gold-text mb-4 anim-2">Thank You!</h1>
+    <div style="height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);" class="w-24 mx-auto mb-6"></div>
+    <p class="font-serif text-gray-300 text-xl italic leading-relaxed mb-4 anim-3">Aapka order successfully place ho gaya hai!</p>
     <p class="font-serif text-gray-500 text-sm italic anim-3" id="order-ref"></p>
-    <div class="glass-card rounded-2xl p-6 my-8 anim-3">
-      <p class="font-display text-xs tracking-[0.3em] text-yellow-700 mb-3">WHAT HAPPENS NEXT</p>
-      <div class="space-y-3 text-left">
+    <div class="glass-card rounded-2xl p-6 my-8 anim-3 text-left">
+      <p class="font-display text-xs tracking-[0.3em] text-yellow-700 mb-4">NEXT STEPS</p>
+      <div class="space-y-3">
         <div class="flex gap-3 text-sm">
           <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">A confirmation email will arrive shortly</p>
+          <p class="font-serif text-gray-400 italic">Humara team aapko 24 ghante mein contact karega</p>
         </div>
         <div class="flex gap-3 text-sm">
           <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">Your order will be shipped within 2-3 business days</p>
+          <p class="font-serif text-gray-400 italic">Order 2-3 business days mein deliver hoga</p>
         </div>
         <div class="flex gap-3 text-sm">
           <span class="text-yellow-500 mt-0.5">✦</span>
-          <p class="font-serif text-gray-400 italic">Complimentary gift wrapping included</p>
+          <p class="font-serif text-gray-400 italic">WhatsApp: 03008206118 pe track kar sakte hain</p>
         </div>
       </div>
     </div>
     <div class="flex gap-4 justify-center anim-3">
       <a href="products.html" class="btn-gold px-8 py-4 text-xs tracking-[0.2em] rounded-xl inline-block">CONTINUE SHOPPING</a>
-      <a href="index.html" class="glass-card px-8 py-4 text-xs font-display tracking-[0.2em] text-yellow-500 hover:border-yellow-500 transition-all rounded-xl inline-block">HOME</a>
+      <a href="index.html" class="glass-card px-8 py-4 text-xs font-display tracking-[0.2em] text-yellow-500 rounded-xl inline-block">HOME</a>
     </div>
-  </div>
-
-  <!-- Cancelled -->
-  <div id="cancelled-state" class="hidden text-center max-w-lg">
-    <div class="w-24 h-24 rounded-full mx-auto mb-8 flex items-center justify-center" style="background:rgba(239,68,68,0.1);border:2px solid rgba(239,68,68,0.3);">
-      <svg class="w-12 h-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </div>
-    <h1 class="font-display text-4xl gold-text mb-4">Order Cancelled</h1>
-    <p class="font-serif text-gray-400 italic mb-8">Your payment was not completed. Your cart has been saved.</p>
-    <a href="cart.html" class="btn-gold px-10 py-4 text-xs tracking-[0.2em] rounded-xl inline-block">RETURN TO CART</a>
   </div>
 </div>
 
@@ -91,18 +71,15 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
 </footer>
 
 <script>
+// Just read order_id from URL - no API calls!
 const params = new URLSearchParams(window.location.search);
-document.getElementById('loading-state').classList.add('hidden');
-if(params.get('success')){
-  document.getElementById('success-state').classList.remove('hidden');
-  const orderId = params.get('order_id') || params.get('session_id');
-  if(orderId) document.getElementById('order-ref').textContent = `Reference: #${orderId}`;
-  localStorage.removeItem('elv_cart');
-} else if(params.get('cancelled')){
-  document.getElementById('cancelled-state').classList.remove('hidden');
+const orderId = params.get('order_id');
+if(orderId){
+  document.getElementById('order-ref').textContent = 'Order Reference: #' + orderId;
 } else {
-  window.location.href='index.html';
+  window.location.href = 'index.html';
 }
+localStorage.removeItem('elv_cart');
 </script>
 </body>
 </html>
