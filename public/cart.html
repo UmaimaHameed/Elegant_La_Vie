@@ -81,7 +81,7 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
           
           <div class="mb-4">
             <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">FULL NAME *</label>
-            <input type="text" id="f-fullname" placeholder="Aapka naam" class="w-full glass-card p-3 rounded-lg text-sm font-serif text-gray-300 placeholder-gray-600 focus:outline-none" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);">
+            <input type="text" id="f-fullname" placeholder="Your full name" class="w-full glass-card p-3 rounded-lg text-sm font-serif text-gray-300 placeholder-gray-600 focus:outline-none" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);">
           </div>
           <div class="mb-4">
             <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">PHONE NUMBER *</label>
@@ -89,7 +89,7 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
           </div>
           <div class="mb-4">
             <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">DELIVERY ADDRESS *</label>
-            <textarea id="f-address" rows="2" placeholder="Ghar ka pura address..." class="w-full glass-card p-3 rounded-lg text-sm font-serif text-gray-300 placeholder-gray-600 resize-none focus:outline-none" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);"></textarea>
+            <textarea id="f-address" rows="2" placeholder="Your complete delivery address..." class="w-full glass-card p-3 rounded-lg text-sm font-serif text-gray-300 placeholder-gray-600 resize-none focus:outline-none" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);"></textarea>
           </div>
           <div class="mb-4">
             <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">PAYMENT METHOD *</label>
@@ -100,7 +100,7 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
           </div>
           <div class="mb-6">
             <label class="font-display text-xs tracking-[0.2em] text-yellow-700 block mb-2">GIFT MESSAGE (Optional)</label>
-            <textarea id="gift-message" rows="2" placeholder="Koi special note..." class="w-full glass-card p-3 rounded-lg text-sm font-serif italic text-gray-300 placeholder-gray-600 resize-none focus:outline-none" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);"></textarea>
+            <textarea id="gift-message" rows="2" placeholder="Add a personal note..." class="w-full glass-card p-3 rounded-lg text-sm font-serif italic text-gray-300 placeholder-gray-600 resize-none focus:outline-none" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);"></textarea>
           </div>
           <button onclick="proceedToCheckout()" id="checkout-btn" class="btn-gold w-full py-4 text-xs tracking-[0.2em] rounded-xl mb-4">
             PLACE ORDER ✦
@@ -175,7 +175,33 @@ function updateQty(id, d){
   if(!item) return;
   item.quantity += d;
   if(item.quantity <= 0) removeItem(id);
-  else { saveCart(cart); renderCart(); }
+  else { saveCart(cart); function showLoginMsg(){
+  // Remove existing if any
+  const existing = document.getElementById('login-msg');
+  if(existing) existing.remove();
+  
+  const msg = document.createElement('div');
+  msg.id = 'login-msg';
+  msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:rgba(8,22,18,0.98);border:1px solid rgba(201,168,76,0.4);padding:32px 40px;border-radius:20px;text-align:center;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,0.6);min-width:300px;';
+  msg.innerHTML = `
+    <div style="font-size:32px;margin-bottom:12px;">✦</div>
+    <p style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.2em;color:#c9a84c;margin-bottom:8px;">LOGIN REQUIRED</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#9ca3af;font-style:italic;margin-bottom:24px;">Please login to place your order</p>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button onclick="localStorage.setItem('elv_redirect','cart.html');window.location.href='login.html';" style="background:linear-gradient(135deg,#8a6f2e,#c9a84c,#e2c47e);color:#0a1f1a;font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.2em;padding:12px 24px;border:none;border-radius:10px;cursor:pointer;font-weight:600;">LOGIN / REGISTER</button>
+      <button onclick="document.getElementById('login-msg').remove();" style="background:transparent;color:#6b7280;font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.15em;padding:12px 20px;border:1px solid rgba(201,168,76,0.2);border-radius:10px;cursor:pointer;">CANCEL</button>
+    </div>
+  `;
+  document.body.appendChild(msg);
+  // Auto close on backdrop click
+  setTimeout(()=>{
+    document.addEventListener('click', function handler(e){
+      if(!msg.contains(e.target)){ msg.remove(); document.removeEventListener('click',handler); }
+    });
+  }, 100);
+}
+
+renderCart(); }
 }
 
 function removeItem(id){
@@ -187,22 +213,27 @@ async function proceedToCheckout(){
   const cart = getCart();
   if(!cart.length) return;
 
+  // Login required
+  const token = localStorage.getItem('elv_token');
+  if(!token){
+    showLoginMsg();
+    return;
+  }
+
   const full_name = document.getElementById('f-fullname').value.trim();
   const phone = document.getElementById('f-phone').value.trim();
   const address = document.getElementById('f-address').value.trim();
   const payment_method = document.getElementById('f-payment').value;
 
-  if(!full_name){ alert('Apna naam likhein!'); return; }
-  if(!phone){ alert('Phone number likhein!'); return; }
-  if(!address){ alert('Delivery address likhein!'); return; }
+  if(!full_name){ alert('Please enter your full name.'); return; }
+  if(!phone){ alert('Please enter your phone number.'); return; }
+  if(!address){ alert('Please enter your delivery address.'); return; }
 
   const btn = document.getElementById('checkout-btn');
   btn.textContent = 'PROCESSING...';
   btn.disabled = true;
 
-  const token = localStorage.getItem('elv_token');
-  const headers = {'Content-Type':'application/json'};
-  if(token) headers['Authorization'] = 'Bearer ' + token;
+  const headers = {'Content-Type':'application/json', 'Authorization': 'Bearer ' + token};
 
   try {
     const res = await fetch('/api/checkout', {
