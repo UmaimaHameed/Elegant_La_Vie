@@ -53,6 +53,10 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
       ORDERS
     </div>
+    <div class="nav-item" onclick="switchTab('discounts', this)">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M17 17h.01M7 17L17 7M3 12a9 9 0 1018 0 9 9 0 00-18 0z"/></svg>
+      DISCOUNTS
+    </div>
   </div>
   <div class="p-6 border-t" style="border-color:rgba(201,168,76,.12);">
     <p class="font-display text-xs text-yellow-700 mb-1 tracking-wider" id="admin-name">Kaleem Ullah</p>
@@ -131,6 +135,55 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
       </table>
     </div>
   </div>
+
+  <!-- Discounts Tab -->
+  <div id="tab-discounts" class="hidden p-8">
+    <div class="glass-card rounded-2xl p-6 mb-6" style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);">
+      <h3 class="font-display text-sm tracking-[0.2em] mb-6" style="color:#c9a84c;">CREATE DISCOUNT CODE</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div>
+          <label class="font-display text-xs tracking-wider text-yellow-700 block mb-2">CODE *</label>
+          <input id="d-code" type="text" placeholder="e.g. SAVE10" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);color:#e5e7eb;" class="w-full p-3 rounded-lg text-sm focus:outline-none uppercase">
+        </div>
+        <div>
+          <label class="font-display text-xs tracking-wider text-yellow-700 block mb-2">TYPE *</label>
+          <select id="d-type" style="background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.2);color:#e5e7eb;" class="w-full p-3 rounded-lg text-sm focus:outline-none">
+            <option value="percentage">Percentage (%)</option>
+            <option value="fixed">Fixed Amount (Rs.)</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-display text-xs tracking-wider text-yellow-700 block mb-2">VALUE *</label>
+          <input id="d-value" type="number" placeholder="e.g. 10" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);color:#e5e7eb;" class="w-full p-3 rounded-lg text-sm focus:outline-none">
+        </div>
+        <div>
+          <label class="font-display text-xs tracking-wider text-yellow-700 block mb-2">MIN ORDER (Rs.)</label>
+          <input id="d-min" type="number" placeholder="0 = no minimum" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);color:#e5e7eb;" class="w-full p-3 rounded-lg text-sm focus:outline-none">
+        </div>
+      </div>
+      <div class="flex gap-4 items-end">
+        <div class="flex-1">
+          <label class="font-display text-xs tracking-wider text-yellow-700 block mb-2">USAGE LIMIT (optional)</label>
+          <input id="d-limit" type="number" placeholder="Leave empty for unlimited" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);color:#e5e7eb;" class="w-full p-3 rounded-lg text-sm focus:outline-none">
+        </div>
+        <button onclick="createDiscount()" class="btn-gold px-8 py-3 text-xs tracking-[0.2em] rounded-xl">CREATE CODE</button>
+      </div>
+      <p id="discount-msg" class="mt-3 text-xs font-serif italic text-yellow-500 hidden"></p>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);" class="rounded-2xl overflow-hidden">
+      <table class="w-full">
+        <thead><tr style="border-bottom:1px solid rgba(201,168,76,0.15);">
+          <th class="text-left py-4 px-6 font-display text-xs tracking-[0.2em] text-yellow-700">CODE</th>
+          <th class="text-left py-4 px-4 font-display text-xs tracking-[0.2em] text-yellow-700">TYPE</th>
+          <th class="text-left py-4 px-4 font-display text-xs tracking-[0.2em] text-yellow-700">VALUE</th>
+          <th class="text-left py-4 px-4 font-display text-xs tracking-[0.2em] text-yellow-700">USED</th>
+          <th class="text-left py-4 px-4 font-display text-xs tracking-[0.2em] text-yellow-700">STATUS</th>
+          <th class="text-left py-4 px-4 font-display text-xs tracking-[0.2em] text-yellow-700">ACTIONS</th>
+        </tr></thead>
+        <tbody id="discounts-body"><tr><td colspan="6" class="text-center py-8 font-serif text-gray-500 italic">No discount codes yet.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
 </main>
 
 <!-- Add/Edit Product Modal -->
@@ -148,7 +201,7 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
           <input type="text" id="f-name" required placeholder="e.g. Noir Mystique" class="input-field px-4 py-3 rounded-lg text-sm font-serif">
         </div>
         <div>
-          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">PRICE (PKR) *</label>
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">PRICE (USD) *</label>
           <input type="number" id="f-price" required placeholder="285" step="0.01" min="0" class="input-field px-4 py-3 rounded-lg text-sm">
         </div>
         <div>
@@ -224,17 +277,18 @@ function authHeaders(){ return {'Content-Type':'application/json','Authorization
 
 // ── Tab switching
 function switchTab(tab, el){
-  ['dashboard','products','orders'].forEach(t=>{
+  ['dashboard','products','orders','discounts'].forEach(t=>{
     document.getElementById(`tab-${t}`).classList.toggle('hidden', t!==tab);
   });
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  const titles = {dashboard:['Dashboard','Overview & Analytics'],products:['Products','Manage your collection'],orders:['Orders','Customer orders']};
+  const titles = {dashboard:['Dashboard','Overview & Analytics'],products:['Products','Manage your collection'],orders:['Orders','Customer orders'],discounts:['Discounts','Manage discount codes']};
   document.getElementById('page-title').textContent=titles[tab][0];
   document.getElementById('page-sub').textContent=titles[tab][1];
   document.getElementById('add-btn').classList.toggle('hidden', tab!=='products');
   if(tab==='products') loadAdminProducts();
   if(tab==='orders') loadOrders();
+  if(tab==='discounts') loadDiscounts();
 }
 
 // ── Dashboard
@@ -248,7 +302,7 @@ async function loadDashboard(){
     const ordersData = await ordersRes.json();
     document.getElementById('stat-products').textContent = statsData.products||0;
     document.getElementById('stat-orders').textContent = statsData.orders||0;
-    document.getElementById('stat-revenue').textContent = 'Rs. '+(statsData.revenue||0).toFixed(0);
+    document.getElementById('stat-revenue').textContent = '$'+(statsData.revenue||0).toFixed(0);
     document.getElementById('stat-customers').textContent = statsData.customers||0;
     const orders = (ordersData.orders||[]).slice(0,5);
     document.getElementById('recent-orders-dash').innerHTML = orders.length ? `
@@ -263,7 +317,7 @@ async function loadDashboard(){
           <tr class="border-b" style="border-color:rgba(201,168,76,.05);">
             <td class="py-3 pr-4 font-display text-xs text-gray-400">#${o.id}</td>
             <td class="py-3 pr-4 font-serif italic text-xs text-gray-400">${o.user_email}</td>
-            <td class="py-3 pr-4 font-display text-sm gold-text">Rs. ${o.total_amount?.toFixed(2)}</td>
+            <td class="py-3 pr-4 font-display text-sm gold-text">$${o.total_amount?.toFixed(2)}</td>
             <td class="py-3"><span class="badge badge-${o.status}">${(o.status||'pending').toUpperCase()}</span></td>
           </tr>`).join('')}
         </tbody>
@@ -298,7 +352,7 @@ function renderAdminProducts(products){
       <div class="p-4">
         <div class="flex justify-between items-start mb-2">
           <h4 class="font-display text-sm gold-text leading-tight">${p.name}</h4>
-          <span class="font-display text-sm gold-text ml-2 whitespace-nowrap">Rs. ${p.price}</span>
+          <span class="font-display text-sm gold-text ml-2 whitespace-nowrap">$${p.price}</span>
         </div>
         <p class="font-serif text-xs text-gray-500 italic mb-1">${p.scent_mood}</p>
         <p class="text-xs text-gray-600 mb-3 line-clamp-1">${p.scent_notes||''}</p>
@@ -322,8 +376,16 @@ async function loadOrders(){
         <td class="py-4 pr-6 font-display text-xs text-gray-400">#${o.id}</td>
         <td class="py-4 pr-6 font-serif italic text-xs text-gray-400">${o.user_email}</td>
         <td class="py-4 pr-6 text-xs text-gray-500 max-w-[200px] truncate">${o.items_summary||'—'}</td>
-        <td class="py-4 pr-6 font-display text-sm gold-text">Rs. ${o.total_amount?.toFixed(2)}</td>
-        <td class="py-4 pr-6"><span class="badge badge-${o.status}">${(o.status||'pending').toUpperCase()}</span></td>
+        <td class="py-4 pr-6 font-display text-sm gold-text">$${o.total_amount?.toFixed(2)}</td>
+        <td class="py-4 pr-6">
+          <select onchange="updateOrderStatus(${o.id}, this.value)" style="background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.3);color:#c9a84c;" class="text-xs rounded-lg px-2 py-1 font-display tracking-wider">
+            <option value="pending" ${o.status==='pending'?'selected':''}>PENDING</option>
+            <option value="confirmed" ${o.status==='confirmed'?'selected':''}>CONFIRMED</option>
+            <option value="shipped" ${o.status==='shipped'?'selected':''}>SHIPPED</option>
+            <option value="delivered" ${o.status==='delivered'?'selected':''}>DELIVERED</option>
+            <option value="cancelled" ${o.status==='cancelled'?'selected':''}>CANCELLED</option>
+          </select>
+        </td>
         <td class="py-4 text-xs text-gray-600">${new Date(o.created_at).toLocaleDateString()}</td>
       </tr>`).join('') : '<tr><td colspan="6" class="text-center py-12 font-serif text-gray-500 italic">No orders yet.</td></tr>';
   }catch(e){ console.error('Orders load error:',e); }
