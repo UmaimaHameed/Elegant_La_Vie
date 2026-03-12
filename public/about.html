@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us — Elegant La Vie</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--emerald-deep:#0a1f1a;--gold:#c9a84c;--gold-light:#e2c47e;--gold-dim:#8a6f2e;--cream:#f5f0e8;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',sans-serif;min-height:100vh;}
+.font-display{font-family:'Cinzel',serif;}
+.font-serif{font-family:'Cormorant Garamond',serif;}
+.gold-text{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.glass-card{background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);backdrop-filter:blur(20px);}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,31,26,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(201,168,76,.15);}
+.cart-badge{position:absolute;top:-6px;right:-6px;background:var(--gold);color:var(--emerald-deep);width:18px;height:18px;border-radius:50%;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.gold-line{height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);}
+.value-card{background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.15);transition:border-color 0.3s;}
+.value-card:hover{border-color:rgba(201,168,76,0.5);}
+.hero-bg{background:radial-gradient(ellipse at top,rgba(201,168,76,0.08) 0%,transparent 60%);}
+</style>
+</head>
+<body>
+
+<nav class="navbar px-6 py-5">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="font-display text-xl tracking-[0.3em] gold-text">ELEGANT LA VIE</a>
+    <div class="hidden md:flex items-center gap-8 text-xs tracking-[0.2em] uppercase font-light">
+      <a href="index.html" class="hover:text-yellow-300 transition-colors">Home</a>
+      <a href="products.html" class="hover:text-yellow-300 transition-colors">Collection</a>
+      <a href="about.html" class="text-yellow-400">About</a>
+    </div>
+    <div class="flex items-center gap-5">
+      <a href="cart.html" class="relative hover:opacity-80 transition-opacity">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <span class="cart-badge" id="cart-count">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="hero-bg pt-36 pb-20 px-6">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Header -->
+    <div class="text-center mb-20">
+      <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-4">✦ OUR STORY ✦</p>
+      <h1 class="font-display text-6xl md:text-7xl gold-text mb-6">About Us</h1>
+      <div class="gold-line w-32 mx-auto mb-6"></div>
+      <p class="font-serif text-gray-400 text-xl italic max-w-2xl mx-auto">Where luxury meets soul — a fragrance house born from passion</p>
+    </div>
+
+    <!-- Story -->
+    <div class="grid md:grid-cols-2 gap-16 items-center mb-24">
+      <div>
+        <p class="font-display text-xs tracking-[0.3em] text-yellow-600 mb-4">WHO WE ARE</p>
+        <h2 class="font-display text-3xl gold-text mb-6 leading-relaxed">Born from a Passion<br>for Fragrance</h2>
+        <p class="font-serif text-gray-300 text-lg italic leading-relaxed mb-6">
+          Elegant La Vie was born from a deep love of scent — the way a single fragrance can transport you to another world, evoke a forgotten memory, or define who you are without saying a word.
+        </p>
+        <p class="font-serif text-gray-400 text-base leading-relaxed mb-6">
+          We believe that luxury should not be a privilege of the few. Every person deserves to wrap themselves in a scent that feels like it was made for them alone. That is the promise of Elegant La Vie.
+        </p>
+        <p class="font-serif text-gray-400 text-base leading-relaxed">
+          From the ancient oud trails of the Middle East to the fresh floral gardens of Europe — we bring the world's finest fragrances to your doorstep across Pakistan.
+        </p>
+      </div>
+      <div class="glass-card rounded-3xl p-12 text-center">
+        <div class="text-7xl mb-6">🌹</div>
+        <p class="font-display text-xs tracking-[0.4em] text-yellow-600 mb-4">OUR PHILOSOPHY</p>
+        <p class="font-serif text-2xl text-gray-300 italic leading-relaxed">
+          "A fragrance is the invisible part of your personality — wear it like a signature."
+        </p>
+        <div class="gold-line w-16 mx-auto mt-6"></div>
+      </div>
+    </div>
+
+    <!-- Values -->
+    <div class="text-center mb-12">
+      <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-3">✦ WHAT WE STAND FOR ✦</p>
+      <h2 class="font-display text-4xl gold-text">Our Values</h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8 mb-24">
+      <div class="value-card rounded-2xl p-8 text-center">
+        <div class="text-5xl mb-5">✦</div>
+        <h3 class="font-display text-sm tracking-[0.2em] gold-text mb-4">AUTHENTICITY</h3>
+        <p class="font-serif text-gray-400 text-sm italic leading-relaxed">Every bottle we carry is carefully sourced and verified. We never compromise on the purity or quality of our fragrances. What you receive is always genuine.</p>
+      </div>
+      <div class="value-card rounded-2xl p-8 text-center">
+        <div class="text-5xl mb-5">🕯️</div>
+        <h3 class="font-display text-sm tracking-[0.2em] gold-text mb-4">CRAFTSMANSHIP</h3>
+        <p class="font-serif text-gray-400 text-sm italic leading-relaxed">Each fragrance in our collection tells a story — crafted by master perfumers who have dedicated their lives to the art of scent and emotion.</p>
+      </div>
+      <div class="value-card rounded-2xl p-8 text-center">
+        <div class="text-5xl mb-5">💛</div>
+        <h3 class="font-display text-sm tracking-[0.2em] gold-text mb-4">CARE</h3>
+        <p class="font-serif text-gray-400 text-sm italic leading-relaxed">From the moment you place your order to the day your perfume arrives, we ensure a luxurious experience wrapped in love, care, and attention to detail.</p>
+      </div>
+    </div>
+
+    <!-- Promise -->
+    <div class="glass-card rounded-3xl p-14 text-center mb-24" style="background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.02));">
+      <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-4">✦ OUR PROMISE ✦</p>
+      <h2 class="font-display text-4xl gold-text mb-8">More Than Just a Perfume</h2>
+      <p class="font-serif text-gray-300 text-xl italic leading-relaxed max-w-3xl mx-auto mb-6">
+        When you choose Elegant La Vie, you are not just buying a fragrance. You are investing in a moment — a feeling — a version of yourself that is confident, refined, and unforgettable.
+      </p>
+      <p class="font-serif text-gray-400 text-base leading-relaxed max-w-2xl mx-auto">
+        We deliver across Pakistan with the utmost care. Every order is packed with love, wrapped in luxury, and sent with a promise — that you deserve nothing less than the finest.
+      </p>
+    </div>
+
+    <!-- Contact + Why Us -->
+    <div class="grid md:grid-cols-2 gap-8 mb-16">
+      <div class="glass-card rounded-2xl p-8">
+        <p class="font-display text-xs tracking-[0.3em] text-yellow-600 mb-6">REACH US</p>
+        <div class="space-y-5">
+          <div class="flex items-center gap-4">
+            <span class="text-2xl">📞</span>
+            <div>
+              <p class="font-display text-xs tracking-wider text-gray-500 mb-1">PHONE</p>
+              <p class="font-serif text-gray-300 italic text-lg">03008206118</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-2xl">💬</span>
+            <div>
+              <p class="font-display text-xs tracking-wider text-gray-500 mb-1">WHATSAPP</p>
+              <p class="font-serif text-gray-300 italic text-lg">03008206118</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-2xl">✉️</span>
+            <div>
+              <p class="font-display text-xs tracking-wider text-gray-500 mb-1">EMAIL</p>
+              <p class="font-serif text-gray-300 italic text-lg"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="caa2afa6a6a58aafa6afadaba4bea6abbca3afe4a9a5a7">[email&#160;protected]</a></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-2xl">🚚</span>
+            <div>
+              <p class="font-display text-xs tracking-wider text-gray-500 mb-1">DELIVERY</p>
+              <p class="font-serif text-gray-300 italic text-lg">All across Pakistan • 2–3 business days</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl p-8">
+        <p class="font-display text-xs tracking-[0.3em] text-yellow-600 mb-6">WHY CHOOSE US</p>
+        <div class="space-y-4">
+          <div class="flex items-start gap-3">
+            <span class="text-yellow-500 mt-1">✦</span>
+            <p class="font-serif text-gray-300 italic leading-relaxed">100% authentic luxury fragrances — guaranteed</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-yellow-500 mt-1">✦</span>
+            <p class="font-serif text-gray-300 italic leading-relaxed">Cash on Delivery available nationwide</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-yellow-500 mt-1">✦</span>
+            <p class="font-serif text-gray-300 italic leading-relaxed">Complimentary luxury gift wrapping on every order</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-yellow-500 mt-1">✦</span>
+            <p class="font-serif text-gray-300 italic leading-relaxed">Dedicated customer support via WhatsApp</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-yellow-500 mt-1">✦</span>
+            <p class="font-serif text-gray-300 italic leading-relaxed">Curated collection for every personality and mood</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-yellow-500 mt-1">✦</span>
+            <p class="font-serif text-gray-300 italic leading-relaxed">Secure ordering with order tracking via WhatsApp</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center">
+      <p class="font-serif text-gray-400 italic text-lg mb-8">Ready to find your signature scent?</p>
+      <a href="products.html" style="background:linear-gradient(135deg,#8a6f2e,#c9a84c,#e2c47e);color:#0a1f1a;font-family:'Cinzel',serif;letter-spacing:0.2em;font-weight:600;padding:16px 48px;border-radius:12px;text-decoration:none;font-size:12px;display:inline-block;">EXPLORE COLLECTION ✦</a>
+    </div>
+
+  </div>
+</div>
+
+<footer class="border-t py-10 px-6 text-center mt-16" style="border-color:rgba(201,168,76,0.15);background:rgba(5,15,12,0.8);">
+  <p class="font-display text-xl tracking-[0.3em] gold-text mb-2">ELEGANT LA VIE</p>
+  <p class="text-xs text-gray-600">📞 03008206118 &nbsp;|&nbsp; 💬 WhatsApp: 03008206118</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><s
