@@ -236,7 +236,8 @@ body::before {
       <a href="index.html" class="hover:text-yellow-300 transition-colors">Home</a>
       <a href="products.html" class="hover:text-yellow-300 transition-colors">Collection</a>
       <a href="quiz.html" class="hover:text-yellow-300 transition-colors">Scent Quiz</a>
-      <a href="#about" class="hover:text-yellow-300 transition-colors">About</a>
+      <a href="about.html" class="hover:text-yellow-300 transition-colors">About</a>
+      <a href="about.html" class="hover:text-yellow-300 transition-colors">About</a>
     </div>
     <div class="flex items-center gap-5">
       <a href="cart.html" class="relative hover:opacity-80 transition-opacity">
@@ -554,6 +555,7 @@ body::before {
           <li><a href="index.html" class="hover:text-yellow-400 transition-colors">Home</a></li>
           <li><a href="products.html" class="hover:text-yellow-400 transition-colors">Collection</a></li>
           <li><a href="quiz.html" class="hover:text-yellow-400 transition-colors">Scent Quiz</a></li>
+          <li><a href="about.html" class="hover:text-yellow-400 transition-colors">About</a></li>
           <li><a href="cart.html" class="hover:text-yellow-400 transition-colors">Cart</a></li>
           <li><a href="login.html" class="hover:text-yellow-400 transition-colors">Account</a></li>
         </ul>
@@ -690,6 +692,9 @@ function addToCart(product) {
   showToast(`${product.name} added to cart ✦`);
 }
 
+// Update cart count on page load
+updateCartCount();
+
 function showToast(msg) {
   const t = document.createElement('div');
   t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.4);padding:14px 24px;border-radius:12px;font-size:14px;font-family:"Cormorant Garamond",serif;font-style:italic;color:#e2c47e;backdrop-filter:blur(20px);';
@@ -697,6 +702,17 @@ function showToast(msg) {
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 3000);
 }
+
+// Smooth scroll for About link
+document.querySelectorAll('a[href="about.html"]').forEach(link => {
+  link.addEventListener('click', function(e){
+    e.preventDefault();
+    const about = document.getElementById('about');
+    if(about){
+      about.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
 </script>
 </body>
 </html>
