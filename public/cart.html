@@ -152,19 +152,19 @@ function renderCart(){
             <span class="font-display text-sm w-6 text-center">${item.quantity}</span>
             <button onclick="updateQty(${item.id},1)" class="w-7 h-7 rounded-full glass-card flex items-center justify-center text-yellow-400 hover:bg-white hover:bg-opacity-5 transition-colors font-display">+</button>
           </div>
-          <span class="font-display text-lg gold-text">$${(item.price * item.quantity).toFixed(2)}</span>
+          <span class="font-display text-lg gold-text">Rs. ${(item.price * item.quantity).toFixed(0)}</span>
         </div>
       </div>
     </div>
   `).join('');
 
   const subtotal = cart.reduce((s,i)=>s+(i.price*i.quantity),0);
-  document.getElementById('subtotal').textContent = 'Rs. ' + subtotal.toFixed(2);
-  document.getElementById('total').textContent = 'Rs. ' + subtotal.toFixed(2);
+  document.getElementById('subtotal').textContent = 'Rs. ' + subtotal.toFixed(0);
+  document.getElementById('total').textContent = 'Rs. ' + subtotal.toFixed(0);
   document.getElementById('summary-items').innerHTML = cart.map(i=>`
     <div class="flex justify-between text-xs text-gray-500">
       <span class="font-serif italic">${i.name} ×${i.quantity}</span>
-      <span>$${(i.price*i.quantity).toFixed(2)}</span>
+      <span>Rs. ${(i.price*i.quantity).toFixed(0)}</span>
     </div>
   `).join('');
 }
@@ -175,11 +175,12 @@ function updateQty(id, d){
   if(!item) return;
   item.quantity += d;
   if(item.quantity <= 0) removeItem(id);
-  else { saveCart(cart); function showLoginMsg(){
-  // Remove existing if any
+  else { saveCart(cart); renderCart(); }
+}
+
+function showLoginMsg(){
   const existing = document.getElementById('login-msg');
   if(existing) existing.remove();
-  
   const msg = document.createElement('div');
   msg.id = 'login-msg';
   msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:rgba(8,22,18,0.98);border:1px solid rgba(201,168,76,0.4);padding:32px 40px;border-radius:20px;text-align:center;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,0.6);min-width:300px;';
@@ -193,15 +194,11 @@ function updateQty(id, d){
     </div>
   `;
   document.body.appendChild(msg);
-  // Auto close on backdrop click
   setTimeout(()=>{
     document.addEventListener('click', function handler(e){
       if(!msg.contains(e.target)){ msg.remove(); document.removeEventListener('click',handler); }
     });
   }, 100);
-}
-
-renderCart(); }
 }
 
 function removeItem(id){
