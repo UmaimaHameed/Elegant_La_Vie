@@ -53,10 +53,7 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
       ORDERS
     </div>
-    <div class="nav-item" onclick="switchTab('discounts', this)">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M17 17h.01M7 17L17 7M3 12a9 9 0 1018 0 9 9 0 00-18 0z"/></svg>
-      DISCOUNTS
-    </div>
+
   </div>
   <div class="p-6 border-t" style="border-color:rgba(201,168,76,.12);">
     <p class="font-display text-xs text-yellow-700 mb-1 tracking-wider" id="admin-name">Kaleem Ullah</p>
@@ -201,8 +198,12 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
           <input type="text" id="f-name" required placeholder="e.g. Noir Mystique" class="input-field px-4 py-3 rounded-lg text-sm font-serif">
         </div>
         <div>
-          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">PRICE (USD) *</label>
-          <input type="number" id="f-price" required placeholder="285" step="0.01" min="0" class="input-field px-4 py-3 rounded-lg text-sm">
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">PRICE (Rs.) *</label>
+          <input type="number" id="f-price" required placeholder="1000" step="0.01" min="0" class="input-field px-4 py-3 rounded-lg text-sm">
+        </div>
+        <div>
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">DISCOUNT % <span style="color:rgba(201,168,76,0.4);font-size:0.6rem;">(0 = no discount)</span></label>
+          <input type="number" id="f-discount" placeholder="0" min="0" max="90" step="1" class="input-field px-4 py-3 rounded-lg text-sm">
         </div>
         <div>
           <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">SCENT MOOD *</label>
@@ -360,7 +361,7 @@ function renderAdminProducts(products){
       <div class="p-4">
         <div class="flex justify-between items-start mb-2">
           <h4 class="font-display text-sm gold-text leading-tight">${p.name}</h4>
-          <span class="font-display text-sm gold-text ml-2 whitespace-nowrap">$${p.price}</span>
+          <span class="font-display text-sm gold-text ml-2 whitespace-nowrap">Rs. ${p.discount_percent>0 ? Math.round(p.price*(1-p.discount_percent/100)) : p.price} ${p.discount_percent>0 ? `<span style="text-decoration:line-through;color:#6b7280;font-size:0.7rem;margin-left:4px;">Rs.${p.price}</span>` : ''}</span>
         </div>
         <p class="font-serif text-xs text-gray-500 italic mb-1">${p.scent_mood}</p>
         <p class="text-xs text-gray-600 mb-3 line-clamp-1">${p.scent_notes||''}</p>
@@ -416,6 +417,7 @@ function openEditProduct(id){
   document.getElementById('edit-id').value = id;
   document.getElementById('f-name').value = p.name||'';
   document.getElementById('f-price').value = p.price||'';
+  document.getElementById('f-discount').value = p.discount_percent||0;
   document.getElementById('f-mood').value = p.scent_mood||'Mysterious';
   document.getElementById('f-gender').value = p.gender||'';
   document.getElementById('f-notes').value = p.scent_notes||'';
@@ -442,6 +444,7 @@ async function handleProductSubmit(e){
   const payload = {
     name: document.getElementById('f-name').value,
     price: parseFloat(document.getElementById('f-price').value),
+    discount_percent: parseInt(document.getElementById('f-discount').value)||0,
     scent_mood: document.getElementById('f-mood').value,
     gender: document.getElementById('f-gender').value,
     scent_notes: document.getElementById('f-notes').value,
@@ -512,7 +515,7 @@ async function updateOrderStatus(id, status){
   try {
     const res = await fetch('/api/admin/order/'+id+'/status', {
       method:'PUT',
-      headers:{...authHeaders(),'Content-Type':'application/json'},
+      headers: authHeaders(),
       body: JSON.stringify({status})
     });
     const data = await res.json();
