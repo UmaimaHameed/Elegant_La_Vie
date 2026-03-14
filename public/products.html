@@ -72,10 +72,19 @@ body { background:var(--emerald-deep); color:var(--cream); font-family:'Montserr
   <p class="font-serif text-gray-400 text-lg italic relative z-10 max-w-md mx-auto">Discover fragrances crafted for every mood and occasion</p>
 </div>
 
-<!-- Filters -->
+<!-- Gender Tabs -->
+<div class="px-6 mb-6">
+  <div class="max-w-7xl mx-auto flex justify-center gap-4">
+    <button id="gender-all" onclick="filterGender('all', this)" class="gender-tab active-gender px-10 py-3 font-display text-xs tracking-[0.3em] rounded-full transition-all duration-300" style="background:linear-gradient(135deg,#8a6f2e,#c9a84c,#e2c47e);color:#0a1f1a;font-weight:600;">ALL</button>
+    <button id="gender-male" onclick="filterGender('male', this)" class="gender-tab px-10 py-3 font-display text-xs tracking-[0.3em] rounded-full transition-all duration-300" style="border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);background:transparent;">♂ FOR HIM</button>
+    <button id="gender-female" onclick="filterGender('female', this)" class="gender-tab px-10 py-3 font-display text-xs tracking-[0.3em] rounded-full transition-all duration-300" style="border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);background:transparent;">♀ FOR HER</button>
+  </div>
+</div>
+
+<!-- Mood Filters -->
 <div class="px-6 mb-12">
   <div class="max-w-7xl mx-auto flex flex-wrap justify-center gap-3">
-    <button class="filter-btn active" onclick="filterProducts('all', this)">ALL</button>
+    <button class="filter-btn active" onclick="filterProducts('all', this)">ALL MOODS</button>
     <button class="filter-btn" onclick="filterProducts('Mysterious', this)">🌙 MYSTERIOUS</button>
     <button class="filter-btn" onclick="filterProducts('Floral', this)">🌹 FLORAL</button>
     <button class="filter-btn" onclick="filterProducts('Fresh', this)">🌊 FRESH</button>
@@ -155,7 +164,10 @@ function renderProducts(products) {
       <div class="p-5">
         <div class="flex justify-between items-start mb-3">
           <span class="mood-badge">${p.scent_mood}</span>
-          ${p.featured ? '<span class="text-yellow-500 text-xs font-display tracking-wider">✦ FEATURED</span>' : ''}
+          <div class="flex items-center gap-2">
+            ${p.gender ? `<span style="font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.15em;padding:3px 10px;border-radius:20px;${p.gender.toLowerCase()==='male'?'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#93c5fd;':'background:rgba(236,72,153,0.15);border:1px solid rgba(236,72,153,0.3);color:#f9a8d4;'}">${p.gender.toLowerCase()==='male'?'♂ HIM':'♀ HER'}</span>` : ''}
+            ${p.featured ? '<span class="text-yellow-500 text-xs font-display tracking-wider">✦</span>' : ''}
+          </div>
         </div>
         <h3 class="font-display text-lg gold-text mb-1">${p.name}</h3>
         <p class="font-serif text-xs text-gray-500 italic mb-2 line-clamp-2">${p.description || ''}</p>
@@ -170,16 +182,38 @@ function renderProducts(products) {
   `).join('');
 }
 
+let activeGender = 'all';
+let activeMood = 'all';
+
+function applyFilters() {
+  let filtered = allProducts;
+  if (activeGender !== 'all') {
+    filtered = filtered.filter(p => (p.gender || '').toLowerCase() === activeGender);
+  }
+  if (activeMood !== 'all') {
+    filtered = filtered.filter(p => p.scent_mood === activeMood);
+  }
+  renderProducts(filtered);
+}
+
+function filterGender(gender, btn) {
+  activeGender = gender;
+  document.querySelectorAll('.gender-tab').forEach(b => {
+    b.style.background = 'transparent';
+    b.style.color = 'rgba(201,168,76,0.7)';
+    b.style.border = '1px solid rgba(201,168,76,0.3)';
+  });
+  btn.style.background = 'linear-gradient(135deg,#8a6f2e,#c9a84c,#e2c47e)';
+  btn.style.color = '#0a1f1a';
+  btn.style.border = 'none';
+  applyFilters();
+}
+
 async function filterProducts(mood, btn) {
+  activeMood = mood;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  
-  if (mood === 'all') {
-    renderProducts(allProducts);
-  } else {
-    const filtered = allProducts.filter(p => p.scent_mood === mood);
-    renderProducts(filtered);
-  }
+  applyFilters();
 }
 
 async function loadProducts() {
