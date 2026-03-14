@@ -213,6 +213,14 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
             <option value="Warm">🕯️ Warm</option>
           </select>
         </div>
+        <div>
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">FOR *</label>
+          <select id="f-gender" class="input-field px-4 py-3 rounded-lg text-sm" style="background:rgba(10,31,26,0.95);">
+            <option value="">Both / Unisex</option>
+            <option value="male">♂ For Him</option>
+            <option value="female">♀ For Her</option>
+          </select>
+        </div>
         <div class="col-span-2">
           <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">SCENT NOTES</label>
           <input type="text" id="f-notes" placeholder="Oud, Amber, Rose, Sandalwood" class="input-field px-4 py-3 rounded-lg text-sm font-serif">
@@ -409,6 +417,7 @@ function openEditProduct(id){
   document.getElementById('f-name').value = p.name||'';
   document.getElementById('f-price').value = p.price||'';
   document.getElementById('f-mood').value = p.scent_mood||'Mysterious';
+  document.getElementById('f-gender').value = p.gender||'';
   document.getElementById('f-notes').value = p.scent_notes||'';
   document.getElementById('f-image').value = p.image||'';
   document.getElementById('f-desc').value = p.description||'';
@@ -434,6 +443,7 @@ async function handleProductSubmit(e){
     name: document.getElementById('f-name').value,
     price: parseFloat(document.getElementById('f-price').value),
     scent_mood: document.getElementById('f-mood').value,
+    gender: document.getElementById('f-gender').value,
     scent_notes: document.getElementById('f-notes').value,
     image: document.getElementById('f-image').value,
     description: document.getElementById('f-desc').value,
