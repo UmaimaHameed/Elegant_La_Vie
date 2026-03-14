@@ -205,9 +205,9 @@ app.get('/api/admin/products', adminMiddleware, async (c) => {
 
 app.post('/api/admin/product', adminMiddleware, async (c) => {
   try {
-    const { name, description, price, image, scent_mood, scent_notes, stock, featured } = await c.req.json()
+    const { name, description, price, image, scent_mood, scent_notes, stock, featured, gender } = await c.req.json()
     if (!name || !price || !scent_mood) return c.json({ error: 'Name, price, and scent mood required' }, 400)
-    const result = await c.env.DB.prepare('INSERT INTO products (name, description, price, image, scent_mood, scent_notes, stock, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').bind(name, description||'', price, image||'', scent_mood, scent_notes||'', stock||100, featured?1:0).run()
+    const result = await c.env.DB.prepare('INSERT INTO products (name, description, price, image, scent_mood, scent_notes, stock, featured, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(name, description||'', price, image||'', scent_mood, scent_notes||'', stock||100, featured?1:0, gender||'').run()
     return c.json({ success: true, id: result.meta.last_row_id }, 201)
   } catch (err) { return c.json({ error: 'Failed to add product', details: err.message }, 500) }
 })
@@ -215,8 +215,8 @@ app.post('/api/admin/product', adminMiddleware, async (c) => {
 app.put('/api/admin/product/:id', adminMiddleware, async (c) => {
   try {
     const id = c.req.param('id')
-    const { name, description, price, image, scent_mood, scent_notes, stock, featured } = await c.req.json()
-    await c.env.DB.prepare('UPDATE products SET name=?, description=?, price=?, image=?, scent_mood=?, scent_notes=?, stock=?, featured=? WHERE id=?').bind(name, description, price, image, scent_mood, scent_notes, stock, featured?1:0, id).run()
+    const { name, description, price, image, scent_mood, scent_notes, stock, featured, gender } = await c.req.json()
+    await c.env.DB.prepare('UPDATE products SET name=?, description=?, price=?, image=?, scent_mood=?, scent_notes=?, stock=?, featured=?, gender=? WHERE id=?').bind(name, description, price, image, scent_mood, scent_notes, stock, featured?1:0, gender||'', id).run()
     return c.json({ success: true })
   } catch (err) { return c.json({ error: 'Failed to update product', details: err.message }, 500) }
 })
