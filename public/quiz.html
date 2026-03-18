@@ -13,13 +13,14 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
 .font-display{font-family:'Cinzel',serif;}.font-serif{font-family:'Cormorant Garamond',serif;}
 .gold-text{background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .glass-card{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);}
-.gold-line{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light),var(--gold));background-size:200% auto;color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.15em;font-weight:600;transition:all .3s;}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dim),var(--gold),var(--gold-light),var(--gold));background-size:200% auto;color:var(--emerald-deep);font-family:'Cinzel',serif;letter-spacing:.15em;font-weight:600;transition:all .3s;cursor:pointer;border:none;}
 .btn-gold:hover{background-position:right center;transform:translateY(-2px);box-shadow:0 10px 30px rgba(201,168,76,.4);}
 .navbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,31,26,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(201,168,76,.15);}
-.option-card{transition:all .3s;cursor:pointer;border:1px solid rgba(201,168,76,0.2);}
-.option-card:hover{border-color:var(--gold);background:rgba(201,168,76,0.08);transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,.3);}
-.option-card.selected{border-color:var(--gold);background:rgba(201,168,76,0.12);}
+.option-card{transition:all .3s;cursor:pointer;border:1px solid rgba(201,168,76,0.2);position:relative;overflow:hidden;}
+.option-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,.3);}
+.option-card.selected{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,0.4);}
+.option-card.selected::after{content:'✦';position:absolute;top:10px;right:10px;color:var(--gold);font-size:0.8rem;}
+.option-img{width:100%;height:160px;object-fit:cover;display:block;}
 .product-card{transition:transform .4s,box-shadow .4s;cursor:pointer;}
 .product-card:hover{transform:translateY(-8px);box-shadow:0 30px 60px rgba(0,0,0,.5);}
 .mood-badge{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid var(--gold-dim);color:var(--gold-light);background:rgba(201,168,76,.08);}
@@ -47,7 +48,6 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
   </div>
 </nav>
 
-<!-- Quiz -->
 <div id="quiz-section" class="pt-32 pb-20 px-6 min-h-screen flex items-center">
   <div class="max-w-3xl mx-auto w-full">
     <!-- Progress -->
@@ -61,112 +61,147 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
       </div>
     </div>
 
-    <!-- Steps -->
+    <!-- Step 1 -->
     <div id="step-1" class="animate-in">
       <p class="font-display text-xs tracking-[0.5em] text-yellow-600 mb-6 text-center">✦ DISCOVER YOUR SCENT ✦</p>
       <h2 class="font-display text-4xl md:text-5xl gold-text text-center mb-4">What is your mood today?</h2>
       <p class="font-serif text-gray-400 text-center italic mb-12 text-lg">Choose what resonates with you right now</p>
       <div class="grid grid-cols-2 gap-4">
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q1','Mysterious', this)">
-          <div class="text-5xl mb-4">🌙</div>
-          <h3 class="font-display text-xl gold-text mb-2">Mysterious</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Dark, enigmatic, complex</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q1','Mysterious', this)">
+          <img src="https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=400&q=80" alt="Mysterious night" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Mysterious</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Dark, enigmatic, complex</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q1','Floral', this)">
-          <div class="text-5xl mb-4">🌹</div>
-          <h3 class="font-display text-xl gold-text mb-2">Floral</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Romantic, fresh, blooming</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q1','Floral', this)">
+          <img src="https://images.unsplash.com/photo-1490750967868-88df5691cc4f?w=400&q=80" alt="Floral garden" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Floral</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Romantic, fresh, blooming</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q1','Fresh', this)">
-          <div class="text-5xl mb-4">🌊</div>
-          <h3 class="font-display text-xl gold-text mb-2">Fresh</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Clean, crisp, invigorating</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q1','Fresh', this)">
+          <img src="https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=400&q=80" alt="Fresh ocean" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Fresh</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Clean, crisp, invigorating</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q1','Warm', this)">
-          <div class="text-5xl mb-4">🕯️</div>
-          <h3 class="font-display text-xl gold-text mb-2">Warm</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Cozy, rich, sensual</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q1','Warm', this)">
+          <img src="https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=400&q=80" alt="Warm candles" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Warm</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Cozy, rich, sensual</p>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- Step 2 -->
     <div id="step-2" class="hidden">
-      <h2 class="font-display text-4xl md:text-5xl gold-text text-center mb-4">What time do you wear perfume?</h2>
+      <h2 class="font-display text-4xl md:text-5xl gold-text text-center mb-4">When do you wear perfume?</h2>
       <p class="font-serif text-gray-400 text-center italic mb-12 text-lg">Your routine reveals your soul</p>
       <div class="grid grid-cols-2 gap-4">
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q2','morning', this)">
-          <div class="text-5xl mb-4">🌅</div>
-          <h3 class="font-display text-lg gold-text mb-2">Morning Ritual</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Starting fresh each day</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q2','morning', this)">
+          <img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=400&q=80" alt="Morning sunrise" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Morning Ritual</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Starting fresh each day</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q2','evening', this)">
-          <div class="text-5xl mb-4">🌆</div>
-          <h3 class="font-display text-lg gold-text mb-2">Evening Elegance</h3>
-          <p class="font-serif text-gray-500 text-sm italic">For special occasions</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q2','evening', this)">
+          <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&q=80" alt="Evening city" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Evening Elegance</h3>
+            <p class="font-serif text-gray-500 text-sm italic">For special occasions</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q2','always', this)">
-          <div class="text-5xl mb-4">✨</div>
-          <h3 class="font-display text-lg gold-text mb-2">Always</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Fragrance is essential</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q2','always', this)">
+          <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&q=80" alt="Stars night" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Always</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Fragrance is essential</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q2','rarely', this)">
-          <div class="text-5xl mb-4">🎯</div>
-          <h3 class="font-display text-lg gold-text mb-2">Special Only</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Rare, precious moments</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q2','rarely', this)">
+          <img src="https://images.unsplash.com/photo-1519750157634-b6d493a0f77c?w=400&q=80" alt="Special moment" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Special Only</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Rare, precious moments</p>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- Step 3 -->
     <div id="step-3" class="hidden">
       <h2 class="font-display text-4xl md:text-5xl gold-text text-center mb-4">Choose your world</h2>
       <p class="font-serif text-gray-400 text-center italic mb-12 text-lg">Where do you feel most alive?</p>
       <div class="grid grid-cols-2 gap-4">
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q3','forest', this)">
-          <div class="text-5xl mb-4">🌲</div>
-          <h3 class="font-display text-lg gold-text mb-2">Ancient Forests</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Moss, cedar, earth</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q3','forest', this)">
+          <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&q=80" alt="Ancient forest" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Ancient Forests</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Moss, cedar, earth</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q3','ocean', this)">
-          <div class="text-5xl mb-4">🌊</div>
-          <h3 class="font-display text-lg gold-text mb-2">Open Ocean</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Salt, freedom, horizon</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q3','ocean', this)">
+          <img src="https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=400&q=80" alt="Open ocean" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Open Ocean</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Salt, freedom, horizon</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q3','garden', this)">
-          <div class="text-5xl mb-4">🌸</div>
-          <h3 class="font-display text-lg gold-text mb-2">Secret Gardens</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Roses, petals, dew</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q3','garden', this)">
+          <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80" alt="Secret garden" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Secret Gardens</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Roses, petals, dew</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q3','city', this)">
-          <div class="text-5xl mb-4">🏙️</div>
-          <h3 class="font-display text-lg gold-text mb-2">City Nights</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Mystery, warmth, amber</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q3','city', this)">
+          <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&q=80" alt="City nights" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">City Nights</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Mystery, warmth, amber</p>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- Step 4 -->
     <div id="step-4" class="hidden">
       <h2 class="font-display text-4xl md:text-5xl gold-text text-center mb-4">Your signature element?</h2>
       <p class="font-serif text-gray-400 text-center italic mb-12 text-lg">The essence that defines you</p>
       <div class="grid grid-cols-2 gap-4">
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q4','dark', this)">
-          <div class="text-5xl mb-4">🌑</div>
-          <h3 class="font-display text-lg gold-text mb-2">Darkness</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Depth and mystery</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q4','dark', this)">
+          <img src="https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=400&q=80" alt="Dark night sky" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Darkness</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Depth and mystery</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q4','light', this)">
-          <div class="text-5xl mb-4">☀️</div>
-          <h3 class="font-display text-lg gold-text mb-2">Light</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Joy and radiance</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q4','light', this)">
+          <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=400&q=80" alt="Bright sunlight" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Light</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Joy and radiance</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q4','earth', this)">
-          <div class="text-5xl mb-4">🪨</div>
-          <h3 class="font-display text-lg gold-text mb-2">Earth</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Grounded and warm</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q4','earth', this)">
+          <img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=400&q=80" alt="Earth mountains" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Earth</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Grounded and warm</p>
+          </div>
         </div>
-        <div class="option-card glass-card rounded-2xl p-8 text-center" onclick="selectOption('q4','air', this)">
-          <div class="text-5xl mb-4">🌬️</div>
-          <h3 class="font-display text-lg gold-text mb-2">Air</h3>
-          <p class="font-serif text-gray-500 text-sm italic">Free and fresh</p>
+        <div class="option-card glass-card rounded-2xl overflow-hidden" onclick="selectOption('q4','air', this)">
+          <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&q=80" alt="Mountain clouds" class="option-img">
+          <div class="p-5 text-center">
+            <h3 class="font-display text-lg gold-text mb-1">Air</h3>
+            <p class="font-serif text-gray-500 text-sm italic">Free and fresh</p>
+          </div>
         </div>
       </div>
     </div>
@@ -196,16 +231,15 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
   </div>
 </div>
 
-<footer class="border-t py-10 px-6 text-center" style="border-color:rgba(201,168,76,0.15);background:rgba(5,15,12,0.8);">
+<footer style="border-top:1px solid rgba(201,168,76,0.15);background:rgba(5,15,12,0.8);padding:40px 24px;text-align:center;">
   <p class="font-display text-xl tracking-[0.3em] gold-text mb-3">ELEGANT LA VIE</p>
-  <p class="text-xs text-gray-600">📞 03008206118 &nbsp;|&nbsp; 💬 WhatsApp: 03008206118</p>
+  <p style="font-size:0.75rem;color:#4b5563;">📞 03008206118 &nbsp;|&nbsp; 💬 WhatsApp: 03008206118</p>
 </footer>
 
 <script>
 let step = 1;
 const totalSteps = 4;
 const answers = {};
-let determinedMood = null;
 
 function getCart(){ try{ return JSON.parse(localStorage.getItem('elv_cart')||'[]'); }catch{ return []; } }
 function saveCart(c){ localStorage.setItem('elv_cart', JSON.stringify(c)); }
@@ -234,17 +268,13 @@ function nextStep(){
     step++;
     const el = document.getElementById(`step-${step}`);
     el.classList.remove('hidden');
-    el.style.animation = 'none';
-    el.offsetHeight;
-    el.style.animation = 'fadeUp .5s ease forwards';
+    el.style.animation = 'none'; el.offsetHeight; el.style.animation = 'fadeUp .5s ease forwards';
     updateProgress();
     const btn = document.getElementById('next-btn');
     if(answers[`q${step}`]){ btn.disabled=false; btn.classList.remove('opacity-50','cursor-not-allowed'); }
     else { btn.disabled=true; btn.classList.add('opacity-50','cursor-not-allowed'); }
     if(step === totalSteps){ btn.textContent = 'REVEAL MY SCENT ✦'; }
-  } else {
-    showResults();
-  }
+  } else { showResults(); }
 }
 
 function prevStep(){
@@ -254,54 +284,47 @@ function prevStep(){
     document.getElementById(`step-${step}`).classList.remove('hidden');
     updateProgress();
     const btn = document.getElementById('next-btn');
-    btn.textContent = 'NEXT →';
-    btn.disabled = false;
-    btn.classList.remove('opacity-50','cursor-not-allowed');
+    btn.textContent = 'NEXT →'; btn.disabled=false; btn.classList.remove('opacity-50','cursor-not-allowed');
   }
 }
 
 function determineMood(){
-  // Q1 (mood selection) is primary
   if(answers.q1) return answers.q1;
-  // Fallback logic
-  const q3map = { forest:'Warm', ocean:'Fresh', garden:'Floral', city:'Mysterious' };
-  const q4map = { dark:'Mysterious', light:'Floral', earth:'Warm', air:'Fresh' };
+  const q3map = {forest:'Warm',ocean:'Fresh',garden:'Floral',city:'Mysterious'};
+  const q4map = {dark:'Mysterious',light:'Floral',earth:'Warm',air:'Fresh'};
   return q3map[answers.q3] || q4map[answers.q4] || 'Mysterious';
 }
 
 const moodMessages = {
-  Mysterious: { title: 'The Mysterious Soul', subtitle: 'Dark, deep, and endlessly alluring — your fragrance should match your magnetic aura' },
-  Floral: { title: 'The Floral Spirit', subtitle: 'Romantic and radiant — you bloom in every room you enter' },
-  Fresh: { title: 'The Free Spirit', subtitle: 'Crisp, clean, and full of life — your scent should feel like a breath of fresh ocean air' },
-  Warm: { title: 'The Warm Heart', subtitle: 'Rich, cozy, and deeply sensual — your fragrance wraps others in luxurious warmth' },
+  Mysterious:{title:'The Mysterious Soul',subtitle:'Dark, deep, and endlessly alluring — your fragrance should match your magnetic aura'},
+  Floral:{title:'The Floral Spirit',subtitle:'Romantic and radiant — you bloom in every room you enter'},
+  Fresh:{title:'The Free Spirit',subtitle:'Crisp, clean, and full of life — your scent should feel like a breath of fresh ocean air'},
+  Warm:{title:'The Warm Heart',subtitle:'Rich, cozy, and deeply sensual — your fragrance wraps others in luxurious warmth'},
 };
 
 async function showResults(){
-  determinedMood = determineMood();
+  const mood = determineMood();
   document.getElementById('quiz-section').classList.add('hidden');
-  const resultsEl = document.getElementById('results-section');
-  resultsEl.classList.remove('hidden');
-  
-  const msg = moodMessages[determinedMood] || moodMessages.Mysterious;
+  document.getElementById('results-section').classList.remove('hidden');
+  const msg = moodMessages[mood] || moodMessages.Mysterious;
   document.getElementById('result-title').textContent = msg.title;
   document.getElementById('result-subtitle').textContent = msg.subtitle;
-
   try {
-    const res = await fetch(`/api/products/mood/${determinedMood}`);
+    const res = await fetch(`/api/products/mood/${mood}`);
     const data = await res.json();
     const products = data.products || [];
     document.getElementById('results-grid').innerHTML = products.map(p => `
       <div class="product-card glass-card rounded-xl overflow-hidden" onclick="location.href='product.html?id=${p.id}'" style="border:1px solid rgba(201,168,76,0.2);">
-        <div class="aspect-square overflow-hidden bg-emerald-950">
-          <img src="${p.image||'https://images.unsplash.com/photo-1541643600914-78b084683702?w=400'}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+        <div class="aspect-square overflow-hidden bg-emerald-950 relative">
+          <img src="${p.image||'https://images.unsplash.com/photo-1541643600914-78b084683702?w=400'}" alt="${p.name}" class="w-full h-full object-cover">
+          ${(p.discount_percent||0)>0?`<div style="position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#8a6f2e,#c9a84c,#e2c47e);color:#0a1f1a;font-family:'Cinzel',serif;font-size:0.65rem;font-weight:700;padding:5px 10px;border-radius:8px;">${p.discount_percent}% OFF</div>`:''}
         </div>
         <div class="p-5">
           <h3 class="font-display text-lg gold-text mb-1">${p.name}</h3>
           <p class="font-serif text-xs text-gray-500 italic mb-3">${p.scent_notes||''}</p>
           <div class="flex justify-between items-center">
-            <span class="font-display text-xl gold-text">$${p.price}</span>
-            <button onclick="event.stopPropagation();addToCart(${JSON.stringify(p).replace(/"/g,'&quot;')})" 
-                    class="btn-gold px-4 py-2 text-xs tracking-widest rounded-lg">ADD</button>
+            ${(p.discount_percent||0)>0?`<div><span style="font-family:'Cinzel',serif;font-size:1.1rem;background:linear-gradient(135deg,#e2c47e,#c9a84c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Rs. ${Math.round(p.price*(1-p.discount_percent/100))}</span> <span style="text-decoration:line-through;color:#6b7280;font-size:0.75rem;">Rs.${p.price}</span></div>`:`<span style="font-family:'Cinzel',serif;font-size:1.1rem;background:linear-gradient(135deg,#e2c47e,#c9a84c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Rs. ${p.price}</span>`}
+            <button onclick="event.stopPropagation();addToCart(${JSON.stringify(p).replace(/"/g,'&quot;')})" class="btn-gold px-4 py-2 text-xs tracking-widest rounded-lg">ADD</button>
           </div>
         </div>
       </div>
@@ -315,36 +338,24 @@ function addToCart(p){
   const cart=getCart(); const ex=cart.find(i=>i.id===p.id);
   if(ex) ex.quantity++; else cart.push({...p,quantity:1});
   saveCart(cart); updateCartCount();
-  showToast(`${p.name} added ✦`);
-}
-
-function showToast(msg){
   const t=document.createElement('div');
   t.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9999;background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.4);padding:14px 24px;border-radius:12px;font-family:"Cormorant Garamond",serif;font-style:italic;color:#e2c47e;';
-  t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3000);
+  t.textContent=p.name+' added ✦'; document.body.appendChild(t); setTimeout(()=>t.remove(),3000);
 }
 
 function retakeQuiz(){
   step=1; Object.keys(answers).forEach(k=>delete answers[k]);
   document.getElementById('results-section').classList.add('hidden');
   document.getElementById('quiz-section').classList.remove('hidden');
-  for(let i=1;i<=4;i++) document.getElementById(`step-${i}`).classList.toggle('hidden', i!==1);
+  for(let i=1;i<=4;i++) document.getElementById(`step-${i}`).classList.toggle('hidden',i!==1);
   document.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('next-btn').disabled=true;
-  document.getElementById('next-btn').classList.add('opacity-50','cursor-not-allowed');
-  document.getElementById('next-btn').textContent='NEXT →';
+  const btn=document.getElementById('next-btn');
+  btn.disabled=true; btn.classList.add('opacity-50','cursor-not-allowed'); btn.textContent='NEXT →';
   updateProgress();
 }
 
-// Auto-run if URL has mood param
 const urlMood = new URLSearchParams(window.location.search).get('mood');
-if(urlMood){
-  answers.q1 = urlMood;
-  step = 4;
-  for(let i=1;i<=4;i++) document.getElementById(`step-${i}`).classList.toggle('hidden', i!==4);
-  updateProgress();
-  showResults();
-}
+if(urlMood){ answers.q1=urlMood; step=4; for(let i=1;i<=4;i++) document.getElementById(`step-${i}`).classList.toggle('hidden',i!==4); updateProgress(); showResults(); }
 
 updateCartCount();
 </script>
