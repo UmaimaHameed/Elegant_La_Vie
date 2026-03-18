@@ -76,8 +76,8 @@ body { background:var(--emerald-deep); color:var(--cream); font-family:'Montserr
 <div class="px-6 mb-6">
   <div class="max-w-7xl mx-auto flex justify-center gap-4">
     <button id="gender-all" onclick="filterGender('all', this)" class="gender-tab active-gender px-10 py-3 font-display text-xs tracking-[0.3em] rounded-full transition-all duration-300" style="background:linear-gradient(135deg,#8a6f2e,#c9a84c,#e2c47e);color:#0a1f1a;font-weight:600;">ALL</button>
-    <button id="gender-male" onclick="filterGender('male', this)" class="gender-tab px-10 py-3 font-display text-xs tracking-[0.3em] rounded-full transition-all duration-300" style="border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);background:transparent;">♂ FOR HIM</button>
-    <button id="gender-female" onclick="filterGender('female', this)" class="gender-tab px-10 py-3 font-display text-xs tracking-[0.3em] rounded-full transition-all duration-300" style="border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);background:transparent;">♀ FOR HER</button>
+    <button id="gender-male" onclick="filterGender('male', this)" class="gender-tab px-10 py-3 font-display text-xs tracking-[0.3em] rounded-full transition-all duration-300" style="border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);background:transparent;">♂ FOR MEN</button>
+    <button id="gender-female" onclick="filterGender('female', this)" class="gender-tab px-10 py-3 font-display text-xs tracking-[0.3em] rounded-full transition-all duration-300" style="border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);background:transparent;">♀ FOR WOMEN</button>
   </div>
 </div>
 
@@ -165,7 +165,7 @@ function renderProducts(products) {
         <div class="flex justify-between items-start mb-3">
           <span class="mood-badge">${p.scent_mood}</span>
           <div class="flex items-center gap-2">
-            ${p.gender ? `<span style="font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.15em;padding:3px 10px;border-radius:20px;${p.gender.toLowerCase()==='male'?'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#93c5fd;':'background:rgba(236,72,153,0.15);border:1px solid rgba(236,72,153,0.3);color:#f9a8d4;'}">${p.gender.toLowerCase()==='male'?'♂ HIM':'♀ HER'}</span>` : ''}
+            ${p.gender ? `<span style="font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.15em;padding:3px 10px;border-radius:20px;${p.gender.toLowerCase()==='male'?'background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);color:#93c5fd;':'background:rgba(236,72,153,0.15);border:1px solid rgba(236,72,153,0.3);color:#f9a8d4;'}">${p.gender.toLowerCase()==='male'?'♂ MEN':'♀ WOMEN'}</span>` : ''}
             ${p.featured ? '<span class="text-yellow-500 text-xs font-display tracking-wider">✦</span>' : ''}
           </div>
         </div>
