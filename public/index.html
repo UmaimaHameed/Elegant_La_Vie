@@ -522,6 +522,7 @@ async function loadFeatured() {
       document.getElementById('hero-notes').textContent = products[0].scent_notes;
       document.getElementById('hero-price').textContent = 'Rs. ' + products[0].price;
       document.getElementById('hero-img').src = products[0].image || 'https://images.unsplash.com/photo-1541643600914-78b084683702?w=500';
+      document.getElementById('hero-img').onerror = function(){ this.src='https://images.unsplash.com/photo-1541643600914-78b084683702?w=500'; };
       document.getElementById('hero-img').alt = products[0].name;
       window._heroProduct = products[0];
     }
@@ -530,7 +531,8 @@ async function loadFeatured() {
       <div class="product-card glass-card rounded-xl overflow-hidden" onclick="location.href='product.html?id=${p.id}'">
         <div class="aspect-square overflow-hidden bg-emerald-950">
           <img src="${p.image || 'https://images.unsplash.com/photo-1541643600914-78b084683702?w=400'}" 
-               alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+               alt="${p.name}" class="w-full h-full object-cover"
+               onerror="this.src='https://images.unsplash.com/photo-1541643600914-78b084683702?w=400'">
         </div>
         <div class="p-5">
           <div class="flex justify-between items-start mb-3">
