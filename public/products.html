@@ -116,6 +116,7 @@ body { background:var(--emerald-deep); color:var(--cream); font-family:'Montserr
   <p class="text-xs text-gray-700 mt-3">© 2024 Elegant La Vie. All rights reserved.</p>
 </footer>
 
+
 <script>
 const API_BASE = '/api';
 let allProducts = [];
@@ -175,7 +176,13 @@ function renderProducts(products) {
         <p class="text-xs text-gray-600 mb-3">${(p.scent_notes || '').split(',').map(n => `<span style="display:inline-block;padding:2px 8px;margin:1px;border-radius:10px;background:rgba(26,107,84,0.3);border:1px solid rgba(26,107,84,0.5);font-size:0.65rem;">${n.trim()}</span>`).join('')}</p>
         <div class="flex justify-between items-center mt-3">
           <div>
-            ${(()=>{ const disc=p.discount_percent||0; if(disc>0){ const sale=Math.round(p.price*(1-disc/100)); return '<div style=\"display:flex;align-items:center;gap:6px;margin-bottom:3px;\"><span style=\"font-family:Cinzel,serif;background:linear-gradient(135deg,#e2c47e,#c9a84c,#8a6f2e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.2rem\">Rs. '+sale+'</span><span style=\"text-decoration:line-through;color:#6b7280;font-size:0.78rem\">Rs. '+p.price+'</span><span style=\"background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);color:#fca5a5;font-family:Cinzel,serif;font-size:0.58rem;letter-spacing:0.1em;padding:2px 7px;border-radius:10px\">'+disc+'% OFF</span></div>'; } else { return '<span style=\"font-family:Cinzel,serif;background:linear-gradient(135deg,#e2c47e,#c9a84c,#8a6f2e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.2rem\">Rs. '+p.price+'</span>'; } })()}
+            ${(p.discount_percent||0)>0 ? 
+              `<div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-family:'Cinzel',serif;font-size:1.2rem;background:linear-gradient(135deg,#e2c47e,#c9a84c,#8a6f2e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Rs. ${Math.round(p.price*(1-p.discount_percent/100))}</span>
+                <span style="text-decoration:line-through;color:#6b7280;font-size:0.78rem;">Rs. ${p.price}</span>
+              </div>` 
+              : `<span style="font-family:'Cinzel',serif;font-size:1.2rem;background:linear-gradient(135deg,#e2c47e,#c9a84c,#8a6f2e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Rs. ${p.price}</span>`
+            }
           </div>
           <button onclick="event.stopPropagation(); addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')})" 
                   class="btn-gold px-4 py-2 text-xs tracking-widest rounded-lg">ADD</button>
