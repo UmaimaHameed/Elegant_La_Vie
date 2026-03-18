@@ -217,17 +217,37 @@ body::before {
 ::-webkit-scrollbar-track { background: var(--emerald-deep); }
 ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
 
-/* Loading skeleton */
-.skeleton {
-  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 8px;
+/* Mobile hamburger menu */
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+.hamburger span { display: block; width: 22px; height: 2px; background: var(--gold); border-radius: 2px; transition: all 0.3s; }
+.mobile-menu { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(8,22,18,0.98); z-index: 200; flex-direction: column; align-items: center; justify-content: center; gap: 32px; }
+.mobile-menu.open { display: flex; }
+.mobile-menu a, .mobile-menu button { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.3em; color: var(--cream); text-decoration: none; transition: color 0.3s; }
+.mobile-menu a:hover { color: var(--gold); }
+
+@media (max-width: 768px) {
+  .hamburger { display: flex; }
+  .hero { min-height: 100svh; padding-top: 80px; }
+  .hero .max-w-7xl { flex-direction: column !important; text-align: center; gap: 32px; }
+  .hero h1 { font-size: 3rem !important; }
+  .hero p { font-size: 1rem !important; }
+  #hero-product { display: none !important; }
+  .section-header { font-size: 2.5rem !important; }
 }
 </style>
 </head>
 <body>
 
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <button onclick="closeMobileMenu()" style="position:absolute;top:24px;right:24px;background:none;border:none;color:var(--gold);font-size:1.5rem;cursor:pointer;">✕</button>
+  <a href="index.html" onclick="closeMobileMenu()">HOME</a>
+  <a href="products.html" onclick="closeMobileMenu()">COLLECTION</a>
+  <a href="quiz.html" onclick="closeMobileMenu()">SCENT QUIZ</a>
+  <a href="#about" onclick="closeMobileMenu();setTimeout(()=>document.getElementById('about')?.scrollIntoView({behavior:'smooth'}),300)">ABOUT</a>
+  <a href="account.html" onclick="closeMobileMenu()">MY ORDERS</a>
+  <a href="cart.html" onclick="closeMobileMenu()">CART</a>
+</div>
 <!-- ── NAVBAR ──────────────────────────────────────────────── -->
 <nav class="navbar px-6 py-5" id="navbar">
   <div class="max-w-7xl mx-auto flex items-center justify-between">
@@ -236,14 +256,14 @@ body::before {
       <a href="index.html" class="hover:text-yellow-300 transition-colors">Home</a>
       <a href="products.html" class="hover:text-yellow-300 transition-colors">Collection</a>
       <a href="quiz.html" class="hover:text-yellow-300 transition-colors">Scent Quiz</a>
-      <a href="about.html" class="hover:text-yellow-300 transition-colors">About</a>
+      <a href="#about" class="hover:text-yellow-300 transition-colors">About</a>
     </div>
     <div class="flex items-center gap-5">
       <a href="cart.html" class="relative hover:opacity-80 transition-opacity">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
         <span class="cart-badge" id="cart-count">0</span>
       </a>
-      <div class="relative">
+      <div class="relative hidden md:block">
         <a href="login.html" id="auth-link" class="text-xs tracking-[0.2em] uppercase hover:text-yellow-300 transition-colors">Login</a>
         <div id="user-menu" class="hidden">
           <button onclick="toggleUserMenu()" id="user-btn" class="flex items-center gap-1 text-xs tracking-[0.2em] uppercase hover:text-yellow-300 transition-colors">
@@ -256,6 +276,10 @@ body::before {
             <button onclick="logoutUser()" class="w-full text-left px-5 py-3 text-xs font-display tracking-wider text-red-400 hover:bg-white hover:bg-opacity-5 transition-colors cursor-pointer" style="background:none;border:none;">✕ LOGOUT</button>
           </div>
         </div>
+      </div>
+      <!-- Hamburger -->
+      <div class="hamburger md:hidden" onclick="openMobileMenu()">
+        <span></span><span></span><span></span>
       </div>
     </div>
   </div>
@@ -570,6 +594,9 @@ function addToCart(product) {
   updateCartCount();
   showToast(`${product.name} added to cart ✦`);
 }
+
+function openMobileMenu(){ document.getElementById('mobile-menu').classList.add('open'); }
+function closeMobileMenu(){ document.getElementById('mobile-menu').classList.remove('open'); }
 
 // Update cart count on page load
 document.addEventListener('DOMContentLoaded', function(){
