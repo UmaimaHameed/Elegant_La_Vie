@@ -157,9 +157,10 @@ function renderProducts(products) {
   noProds.classList.add('hidden');
   grid.innerHTML = products.map(p => `
     <div class="product-card glass-card rounded-xl overflow-hidden" onclick="location.href='product.html?id=${p.id}'">
-      <div class="aspect-square overflow-hidden bg-emerald-950">
+      <div class="aspect-square overflow-hidden bg-emerald-950 relative">
         <img src="${p.image || 'https://images.unsplash.com/photo-1541643600914-78b084683702?w=400'}" 
              alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+        ${(p.discount_percent||0)>0 ? `<div style="position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#8a6f2e,#c9a84c,#e2c47e);color:#0a1f1a;font-family:'Cinzel',serif;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;padding:5px 10px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.3);">${p.discount_percent}% OFF</div>` : ''}
       </div>
       <div class="p-5">
         <div class="flex justify-between items-start mb-3">
