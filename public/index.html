@@ -674,20 +674,45 @@ function showToast(msg) {
 </style>
 
 
-<script
-  data-embed-id="e2510216-8e59-4a52-aade-e036039d0994"
-  data-base-api-url="https://anythingllm-production-507c.up.railway.app/api/embed"
-  src="https://anythingllm-production-507c.up.railway.app/embed/anythingllm-chat-widget.min.js"
-  data-chat-icon="chatBubble"
-  data-window-height="550"
-  data-window-width="350"
-  data-button-color="#c9a84c"
-  data-user-bg-color="#c9a84c"
-  data-assistant-name="Elegant La Vie"
-  data-position="bottom-right"
-  data-default-open="false"
-  data-open-on-load="false"
->
+<!-- Custom Chatbot Button -->
+<div id="elv-chat-btn" onclick="toggleChat()" style="
+  position:fixed; bottom:24px; right:24px; z-index:10000;
+  width:60px; height:60px; border-radius:50%;
+  background:linear-gradient(135deg,#8a6f2e,#c9a84c);
+  cursor:pointer; display:flex; align-items:center;
+  justify-content:center; box-shadow:0 4px 20px rgba(201,168,76,0.4);
+">
+  <svg width="28" height="28" fill="white" viewBox="0 0 24 24">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+  </svg>
+</div>
+
+<div id="elv-chat-window" style="
+  display:none; position:fixed; bottom:100px; right:24px;
+  z-index:9999; width:400px; height:600px;
+  border-radius:16px; overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  border:1px solid rgba(201,168,76,0.3);
+">
+  <iframe
+    src="https://anythingllm-production-507c.up.railway.app/embed/e2510216-8e59-4a52-aade-e036039d0994"
+    style="width:100%; height:100%; border:none;"
+    allow="microphone">
+  </iframe>
+</div>
+
+<script>
+function toggleChat() {
+  var w = document.getElementById('elv-chat-window');
+  var btn = document.getElementById('elv-chat-btn');
+  if(w.style.display === 'none') {
+    w.style.display = 'block';
+    btn.style.background = 'linear-gradient(135deg,#c9a84c,#8a6f2e)';
+  } else {
+    w.style.display = 'none';
+    btn.style.background = 'linear-gradient(135deg,#8a6f2e,#c9a84c)';
+  }
+}
 </script>
 
 </body>
