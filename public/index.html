@@ -788,9 +788,10 @@ async function elvSendMessage() {
 
   try {
    var res = await fetch('https://elv-chat-proxy.bsai25108143.workers.dev', {
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text, sessionId: elvSessionId })
-    });
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ message: text, sessionId: elvSessionId })
+});
     var data = await res.json();
     var typing = document.getElementById('elv-typing');
     if(typing) typing.remove();
