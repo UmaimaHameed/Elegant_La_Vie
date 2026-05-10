@@ -684,6 +684,19 @@ function showToast(msg) {
   data-default-open="false"
 >
 </script>
-
+<script>
+  window.addEventListener('load', function() {
+    localStorage.removeItem('anythingllm_widget_open');
+    localStorage.removeItem('anythingllm-chat-widget');
+    localStorage.removeItem('anythingllm_open');
+    
+    setTimeout(function() {
+      var closeButtons = document.querySelectorAll(
+        'button[class*="close"], [aria-label="Close"], [class*="chat-close"]'
+      );
+      closeButtons.forEach(function(btn) { btn.click(); });
+    }, 800);
+  });
+</script>
 </body>
 </html>
