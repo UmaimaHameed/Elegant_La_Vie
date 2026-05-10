@@ -787,8 +787,7 @@ async function elvSendMessage() {
   elvAddTyping();
 
   try {
-    var res = await fetch('https://anythingllm-production-507c.up.railway.app/api/embed/' + 'e2510216-8e59-4a52-aade-e036039d0994' + '/chat', {
-      method: 'POST',
+   var res = await fetch('https://elv-chat-proxy.bsai25108143.workers.dev', {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: text, sessionId: elvSessionId })
     });
