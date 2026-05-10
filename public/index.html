@@ -656,47 +656,154 @@ function showToast(msg) {
 </script>
   
 
-<style>
-/* AnythingLLM widget fix */
-#anything-llm-chat-widget-container,
-#anythingllm-chat-widget,
-[id*="anythingllm"],
-[class*="anythingllm"] {
-  position: fixed !important;
-  bottom: 24px !important;
-  right: 24px !important;
-  width: 400px !important;
-  height: 600px !important;
-  top: auto !important;
-  left: auto !important;
-  z-index: 9999 !important;
-}
-</style>
-<script
-  data-embed-id="e2510216-8e59-4a52-aade-e036039d0994"
-  data-base-api-url="https://anythingllm-production-507c.up.railway.app/api/embed"
-  src="https://anythingllm-production-507c.up.railway.app/embed/anythingllm-chat-widget.min.js"
-  data-chat-icon="chatBubble"
-  data-window-height="550"
-  data-window-width="350"
-  data-button-color="#c9a84c"
-  data-position="bottom-right"
-  data-default-open="false"
->
-</script>
+<!-- Elegant La Vie Custom Chatbot -->
+<div id="elv-chat-bubble" onclick="elvToggleChat()" style="
+  position:fixed; bottom:28px; right:28px; z-index:99999;
+  width:58px; height:58px; border-radius:50%;
+  background:linear-gradient(135deg,#8a6f2e,#c9a84c,#e2c47e);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 24px rgba(201,168,76,0.5);
+  transition: transform 0.2s ease;
+" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+  <svg id="elv-chat-icon" width="26" height="26" fill="white" viewBox="0 0 24 24">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+  </svg>
+</div>
+
+<div id="elv-chat-box" style="
+  display:none; position:fixed; bottom:100px; right:28px; z-index:99998;
+  width:370px; height:560px; border-radius:20px; overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  border:1px solid rgba(201,168,76,0.3);
+  background:#0a1f1a; flex-direction:column;
+">
+  <!-- Header -->
+  <div style="
+    background:linear-gradient(135deg,#0d2b24,#144d3f);
+    padding:16px 20px; display:flex; align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid rgba(201,168,76,0.2);
+  ">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8a6f2e,#c9a84c);display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+      </div>
+      <div>
+        <p style="font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.15em;color:#e2c47e;margin:0;">ELEGANT LA VIE</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:0.7rem;color:#6b9e8a;margin:0;font-style:italic;">Your Fragrance Assistant</p>
+      </div>
+    </div>
+    <button onclick="elvToggleChat()" style="background:none;border:none;cursor:pointer;color:#8a6f2e;font-size:1.3rem;line-height:1;">✕</button>
+  </div>
+
+  <!-- Messages -->
+  <div id="elv-messages" style="
+    flex:1; overflow-y:auto; padding:16px; display:flex;
+    flex-direction:column; gap:12px; height:400px;
+    scrollbar-width:thin; scrollbar-color:#8a6f2e #0a1f1a;
+  ">
+    <div style="display:flex;gap:8px;align-items:flex-start;">
+      <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#8a6f2e,#c9a84c);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(201,168,76,0.15);padding:10px 14px;border-radius:0 12px 12px 12px;max-width:85%;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:#f5f0e8;margin:0;font-style:italic;line-height:1.5;">
+          Salam! I'm your Elegant La Vie fragrance assistant. How can I help you find your perfect scent today? ✦
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div style="padding:12px 16px;border-top:1px solid rgba(201,168,76,0.15);display:flex;gap:8px;background:#0d2b24;">
+    <input id="elv-input" type="text" placeholder="Ask about our fragrances..."
+      onkeypress="if(event.key==='Enter') elvSendMessage()"
+      style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(201,168,76,0.2);
+      border-radius:10px;padding:10px 14px;color:#f5f0e8;font-family:'Cormorant Garamond',serif;
+      font-size:0.9rem;outline:none;font-style:italic;"
+    />
+    <button onclick="elvSendMessage()" style="
+      background:linear-gradient(135deg,#8a6f2e,#c9a84c);
+      border:none;border-radius:10px;width:40px;height:40px;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;
+    ">
+      <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+    </button>
+  </div>
+</div>
+
 <script>
-  window.addEventListener('load', function() {
-    localStorage.removeItem('anythingllm_widget_open');
-    localStorage.removeItem('anythingllm-chat-widget');
-    localStorage.removeItem('anythingllm_open');
-    
-    setTimeout(function() {
-      var closeButtons = document.querySelectorAll(
-        'button[class*="close"], [aria-label="Close"], [class*="chat-close"]'
-      );
-      closeButtons.forEach(function(btn) { btn.click(); });
-    }, 800);
-  });
+var elvOpen = false;
+var elvSessionId = 'elv_' + Math.random().toString(36).substr(2, 9);
+
+function elvToggleChat() {
+  elvOpen = !elvOpen;
+  document.getElementById('elv-chat-box').style.display = elvOpen ? 'flex' : 'none';
+  if(elvOpen) document.getElementById('elv-input').focus();
+}
+
+function elvAddMessage(text, isUser) {
+  var msgs = document.getElementById('elv-messages');
+  var div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:8px;align-items:flex-start;' + (isUser ? 'flex-direction:row-reverse;' : '');
+  
+  var avatar = document.createElement('div');
+  avatar.style.cssText = 'width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;' + 
+    (isUser ? 'background:linear-gradient(135deg,#c9a84c,#e2c47e);' : 'background:linear-gradient(135deg,#8a6f2e,#c9a84c);');
+  avatar.innerHTML = isUser ? 
+    '<svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>' :
+    '<svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>';
+
+  var bubble = document.createElement('div');
+  bubble.style.cssText = 'padding:10px 14px;border-radius:' + (isUser ? '12px 0 12px 12px' : '0 12px 12px 12px') + ';max-width:85%;' +
+    (isUser ? 'background:linear-gradient(135deg,#8a6f2e,#c9a84c);' : 'background:rgba(255,255,255,0.06);border:1px solid rgba(201,168,76,0.15);');
+  bubble.innerHTML = '<p style="font-family:\'Cormorant Garamond\',serif;font-size:0.9rem;color:#f5f0e8;margin:0;font-style:italic;line-height:1.5;">' + text + '</p>';
+
+  div.appendChild(avatar);
+  div.appendChild(bubble);
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function elvAddTyping() {
+  var msgs = document.getElementById('elv-messages');
+  var div = document.createElement('div');
+  div.id = 'elv-typing';
+  div.style.cssText = 'display:flex;gap:8px;align-items:flex-start;';
+  div.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#8a6f2e,#c9a84c);flex-shrink:0;"></div>' +
+    '<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(201,168,76,0.15);padding:10px 14px;border-radius:0 12px 12px 12px;">' +
+    '<p style="font-family:\'Cormorant Garamond\',serif;font-size:0.9rem;color:#8a6f2e;margin:0;font-style:italic;">typing...</p></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function elvSendMessage() {
+  var input = document.getElementById('elv-input');
+  var text = input.value.trim();
+  if(!text) return;
+  
+  input.value = '';
+  elvAddMessage(text, true);
+  elvAddTyping();
+
+  try {
+    var res = await fetch('https://anythingllm-production-507c.up.railway.app/api/embed/' + 'e2510216-8e59-4a52-aade-e036039d0994' + '/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, sessionId: elvSessionId })
+    });
+    var data = await res.json();
+    var typing = document.getElementById('elv-typing');
+    if(typing) typing.remove();
+    elvAddMessage(data.textResponse || data.response || 'I apologize, I could not process your request.', false);
+  } catch(err) {
+    var typing = document.getElementById('elv-typing');
+    if(typing) typing.remove();
+    elvAddMessage('Sorry, I am having trouble connecting. Please try again!', false);
+  }
+}
 </script>
+
 </body>
 </html>
+
