@@ -654,6 +654,26 @@ function showToast(msg) {
 }
 
 </script>
+  
+
+<style>
+/* AnythingLLM widget fix */
+#anything-llm-chat-widget-container,
+#anythingllm-chat-widget,
+[id*="anythingllm"],
+[class*="anythingllm"] {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  width: 400px !important;
+  height: 600px !important;
+  top: auto !important;
+  left: auto !important;
+  z-index: 9999 !important;
+}
+</style>
+
+
 <script
   data-embed-id="e2510216-8e59-4a52-aade-e036039d0994"
   data-base-api-url="https://anythingllm-production-507c.up.railway.app/api/embed"
