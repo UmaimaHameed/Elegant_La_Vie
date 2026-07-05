@@ -226,8 +226,13 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
           <input type="text" id="f-notes" placeholder="Oud, Amber, Rose, Sandalwood" class="input-field px-4 py-3 rounded-lg text-sm font-serif">
         </div>
         <div class="col-span-2">
-          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">IMAGE URL</label>
-          <input type="url" id="f-image" placeholder="https://images.unsplash.com/..." class="input-field px-4 py-3 rounded-lg text-sm">
+          <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">PRODUCT IMAGE</label>
+          <div class="flex items-center gap-3 mb-2">
+            <input type="file" id="f-image-file" accept="image/*" onchange="uploadProductImage(this)" class="text-xs text-gray-400">
+            <span id="upload-status" class="text-xs font-serif italic text-gray-500"></span>
+          </div>
+          <img id="f-image-preview" class="hidden h-24 rounded-lg object-cover mb-2" style="border:1px solid rgba(201,168,76,0.3);">
+          <input type="url" id="f-image" placeholder="Ya yahan seedha image URL paste karo" class="input-field px-4 py-3 rounded-lg text-sm" oninput="document.getElementById('f-image-preview').src=this.value; document.getElementById('f-image-preview').classList.remove('hidden')">
         </div>
         <div class="col-span-2">
           <label class="font-display text-xs tracking-[.2em] text-yellow-700 block mb-2">DESCRIPTION</label>
@@ -277,6 +282,50 @@ function esc(str){
   return String(str ?? '').replace(/[&<>"']/g, ch => ({
     '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
   }[ch]));
+}
+
+// ── Image upload: sends the chosen file straight from phone/laptop to the server,
+// server stores it in R2 and gives back a public URL, which we drop into f-image.
+async function uploadProductImage(input){
+  const file = input.files[0];
+  if(!file) return;
+  const statusEl = document.getElementById('upload-status');
+  const previewEl = document.getElementById('f-image-preview');
+
+  if(!file.type.startsWith('image/')){
+    statusEl.textContent = 'Sirf image files allowed hain.';
+    statusEl.style.color = '#ef4444';
+    return;
+  }
+  if(file.size > 5*1024*1024){
+    statusEl.textContent = 'Image 5MB se choti honi chahiye.';
+    statusEl.style.color = '#ef4444';
+    return;
+  }
+
+  // instant local preview while it uploads
+  previewEl.src = URL.createObjectURL(file);
+  previewEl.classList.remove('hidden');
+  statusEl.style.color = '#9ca3af';
+  statusEl.textContent = 'Upload ho raha hai...';
+
+  try{
+    const fd = new FormData();
+    fd.append('image', file);
+    const res = await fetch('/api/admin/upload', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + authToken },
+      body: fd
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Upload failed');
+    document.getElementById('f-image').value = data.url;
+    statusEl.style.color = '#4ade80';
+    statusEl.textContent = 'Upload ho gaya ✓';
+  }catch(err){
+    statusEl.style.color = '#ef4444';
+    statusEl.textContent = 'Upload fail: ' + err.message;
+  }
 }
 
 // ── Auth check
