@@ -108,6 +108,34 @@ app.post('/api/admin/change-credentials', adminMiddleware, async (c) => {
   }
 })
 
+// UPLOAD IMAGE (admin only) — accepts a file directly from device, forwards it to ImgBB, returns a public URL
+app.post('/api/admin/upload', adminMiddleware, async (c) => {
+  try {
+    const formData = await c.req.formData()
+    const file = formData.get('image')
+    if (!file || typeof file === 'string') return c.json({ error: 'No image file provided' }, 400)
+    if (!file.type || !file.type.startsWith('image/')) return c.json({ error: 'Only image files are allowed' }, 400)
+    if (file.size > 5 * 1024 * 1024) return c.json({ error: 'Image must be under 5MB' }, 400)
+    if (!c.env.IMGBB_API_KEY) return c.json({ error: 'Server misconfigured: IMGBB_API_KEY not set' }, 500)
+
+    const uploadForm = new FormData()
+    uploadForm.append('image', file, file.name || 'upload.jpg')
+
+    const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${c.env.IMGBB_API_KEY}`, {
+      method: 'POST',
+      body: uploadForm
+    })
+    const imgbbData = await imgbbRes.json()
+    if (!imgbbRes.ok || !imgbbData.success) {
+      return c.json({ error: 'Upload to image host failed', details: imgbbData.error?.message || 'unknown error' }, 502)
+    }
+
+    return c.json({ success: true, url: imgbbData.data.url })
+  } catch (err) {
+    return c.json({ error: 'Upload failed', details: err.message }, 500)
+  }
+})
+
 // PRODUCTS
 app.get('/api/products', async (c) => {
   try {
