@@ -271,6 +271,14 @@ let authToken = null;
 let deleteTargetId = null;
 let allAdminProducts = [];
 
+// Escape HTML so untrusted data (order names, addresses, product fields, etc.)
+// can never break out and run as script when inserted via innerHTML.
+function esc(str){
+  return String(str ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[ch]));
+}
+
 // ── Auth check
 function init(){
   authToken = localStorage.getItem('elv_token');
@@ -353,20 +361,20 @@ function renderAdminProducts(products){
   document.getElementById('admin-products-grid').innerHTML = products.map(p=>`
     <div class="glass-card rounded-xl overflow-hidden" style="border-color:rgba(201,168,76,0.15);">
       <div class="h-40 overflow-hidden relative">
-        <img src="${p.image||'https://images.unsplash.com/photo-1541643600914-78b084683702?w=300'}" 
-             alt="${p.name}" class="w-full h-full object-cover">
+        <img src="${esc(p.image||'https://images.unsplash.com/photo-1541643600914-78b084683702?w=300')}" 
+             alt="${esc(p.name)}" class="w-full h-full object-cover">
         ${p.featured?'<span class="absolute top-2 left-2 text-xs font-display tracking-wider px-2 py-1 rounded" style="background:rgba(201,168,76,0.9);color:#0a1f1a;">✦ FEATURED</span>':''}
       </div>
       <div class="p-4">
         <div class="flex justify-between items-start mb-2">
-          <h4 class="font-display text-sm gold-text leading-tight">${p.name}</h4>
+          <h4 class="font-display text-sm gold-text leading-tight">${esc(p.name)}</h4>
           <span class="font-display text-sm gold-text ml-2 whitespace-nowrap">Rs. ${p.discount_percent>0 ? Math.round(p.price*(1-p.discount_percent/100)) : p.price} ${p.discount_percent>0 ? `<span style="text-decoration:line-through;color:#6b7280;font-size:0.7rem;margin-left:4px;">Rs.${p.price}</span>` : ''}</span>
         </div>
-        <p class="font-serif text-xs text-gray-500 italic mb-1">${p.scent_mood}</p>
-        <p class="text-xs text-gray-600 mb-3 line-clamp-1">${p.scent_notes||''}</p>
+        <p class="font-serif text-xs text-gray-500 italic mb-1">${esc(p.scent_mood)}</p>
+        <p class="text-xs text-gray-600 mb-3 line-clamp-1">${esc(p.scent_notes||'')}</p>
         <div class="flex gap-2">
           <button onclick="openEditProduct(${p.id})" class="flex-1 py-2 text-xs font-display tracking-[.1em] glass-card rounded-lg text-yellow-600 hover:border-yellow-500 transition-all cursor-pointer">EDIT</button>
-          <button onclick="openDeleteConfirm(${p.id},'${p.name.replace(/'/g,"\\'")}' )" class="flex-1 py-2 text-xs font-display tracking-[.1em] rounded-lg cursor-pointer text-red-500 hover:bg-red-500 hover:bg-opacity-10 transition-all" style="border:1px solid rgba(239,68,68,0.3);">DELETE</button>
+          <button onclick="openDeleteConfirm(${p.id},'${p.name.replace(/'/g,"\\'").replace(/"/g,'&quot;')}' )" class="flex-1 py-2 text-xs font-display tracking-[.1em] rounded-lg cursor-pointer text-red-500 hover:bg-red-500 hover:bg-opacity-10 transition-all" style="border:1px solid rgba(239,68,68,0.3);">DELETE</button>
         </div>
       </div>
     </div>
@@ -382,8 +390,8 @@ async function loadOrders(){
     document.getElementById('orders-body').innerHTML = orders.length ? orders.map(o=>`
       <tr class="border-b hover:bg-white hover:bg-opacity-5 transition-colors" style="border-color:rgba(201,168,76,.05);">
         <td class="py-4 pr-6 font-display text-xs text-gray-400">#${o.id}</td>
-        <td class="py-4 pr-6 font-serif italic text-xs text-gray-400">${o.user_email}</td>
-        <td class="py-4 pr-6 text-xs text-gray-500 max-w-[200px] truncate">${o.items_summary||'—'}</td>
+        <td class="py-4 pr-6 font-serif italic text-xs text-gray-400">${esc(o.user_email)}</td>
+        <td class="py-4 pr-6 text-xs text-gray-500 max-w-[200px] truncate">${esc(o.items_summary||'—')}</td>
         <td class="py-4 pr-6 font-display text-sm gold-text">Rs. ${o.total_amount?.toFixed(0)}</td>
         <td class="py-4 pr-6">
           <select onchange="updateOrderStatus(${o.id}, this.value)" style="background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.3);color:#c9a84c;" class="text-xs rounded-lg px-2 py-1 font-display tracking-wider">
