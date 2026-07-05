@@ -122,12 +122,13 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
             <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4 pr-6">CUSTOMER</th>
             <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4 pr-6">ITEMS</th>
             <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4 pr-6">TOTAL</th>
+            <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4 pr-6">RISK</th>
             <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4 pr-6">STATUS</th>
             <th class="font-display text-xs tracking-[.2em] text-yellow-700 pb-4">DATE</th>
           </tr>
         </thead>
         <tbody id="orders-body">
-          <tr><td colspan="6" class="text-center py-12 font-serif text-gray-500 italic">Loading orders...</td></tr>
+          <tr><td colspan="7" class="text-center py-12 font-serif text-gray-500 italic">Loading orders...</td></tr>
         </tbody>
       </table>
     </div>
@@ -442,6 +443,7 @@ async function loadOrders(){
         <td class="py-4 pr-6 font-serif italic text-xs text-gray-400">${esc(o.user_email)}</td>
         <td class="py-4 pr-6 text-xs text-gray-500 max-w-[200px] truncate">${esc(o.items_summary||'—')}</td>
         <td class="py-4 pr-6 font-display text-sm gold-text">Rs. ${o.total_amount?.toFixed(0)}</td>
+        <td class="py-4 pr-6">${riskBadge(o.risk_score, o.risk_reasons)}</td>
         <td class="py-4 pr-6">
           <select onchange="updateOrderStatus(${o.id}, this.value)" style="background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.3);color:#c9a84c;" class="text-xs rounded-lg px-2 py-1 font-display tracking-wider">
             <option value="pending" ${o.status==='pending'?'selected':''}>PENDING</option>
@@ -452,8 +454,21 @@ async function loadOrders(){
           </select>
         </td>
         <td class="py-4 text-xs text-gray-600">${new Date(o.created_at).toLocaleDateString()}</td>
-      </tr>`).join('') : '<tr><td colspan="6" class="text-center py-12 font-serif text-gray-500 italic">No orders yet.</td></tr>';
+      </tr>`).join('') : '<tr><td colspan="7" class="text-center py-12 font-serif text-gray-500 italic">No orders yet.</td></tr>';
   }catch(e){ console.error('Orders load error:',e); }
+}
+
+// Renders a colored Low/Medium/High risk badge with a hover tooltip listing why
+function riskBadge(score, reasonsJson){
+  score = score || 0;
+  let reasons = [];
+  try{ reasons = JSON.parse(reasonsJson || '[]'); }catch{}
+  const reasonText = reasons.length ? reasons.map(esc).join(' • ') : 'No risk factors detected';
+  let color, label;
+  if(score >= 50){ color = '#ef4444'; label = 'HIGH'; }
+  else if(score >= 25){ color = '#eab308'; label = 'MEDIUM'; }
+  else { color = '#4ade80'; label = 'LOW'; }
+  return `<span title="${reasonText}" style="display:inline-block;padding:3px 10px;border-radius:8px;font-size:0.65rem;letter-spacing:0.05em;font-weight:600;background:${color}22;color:${color};border:1px solid ${color}55;cursor:help;">${label} (${score})</span>`;
 }
 
 // ── Product Modal
