@@ -272,10 +272,27 @@ body{background:var(--emerald-deep);color:var(--cream);font-family:'Montserrat',
   </div>
 </div>
 
+<!-- Risk Details Modal -->
+<div id="risk-modal" class="modal-overlay hidden">
+  <div class="glass-card rounded-2xl p-8 max-w-sm mx-4" style="border-color:rgba(201,168,76,0.25);">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-display text-lg gold-text">Order Risk Details</h3>
+      <button onclick="document.getElementById('risk-modal').classList.add('hidden')" class="text-gray-500 hover:text-white transition-colors text-2xl leading-none cursor-pointer">&times;</button>
+    </div>
+    <div class="flex items-center gap-3 mb-5">
+      <span id="risk-modal-badge" class="inline-block px-3 py-1 rounded-lg text-xs font-display tracking-wider"></span>
+      <span id="risk-modal-score" class="font-serif text-gray-500 italic text-sm"></span>
+    </div>
+    <ul id="risk-modal-reasons" class="space-y-2 mb-2"></ul>
+    <button onclick="document.getElementById('risk-modal').classList.add('hidden')" class="glass-card w-full py-3 mt-4 text-xs font-display tracking-widest text-yellow-700 hover:border-yellow-500 transition-all rounded-xl cursor-pointer">CLOSE</button>
+  </div>
+</div>
+
 <script>
 let authToken = null;
 let deleteTargetId = null;
 let allAdminProducts = [];
+let ordersRiskData = {};
 
 // Escape HTML so untrusted data (order names, addresses, product fields, etc.)
 // can never break out and run as script when inserted via innerHTML.
@@ -437,13 +454,19 @@ async function loadOrders(){
     const res = await fetch('/api/admin/orders',{headers:authHeaders()});
     const data = await res.json();
     const orders = data.orders||[];
+    ordersRiskData = {};
+    orders.forEach(o => {
+      let reasons = [];
+      try{ reasons = JSON.parse(o.risk_reasons || '[]'); }catch{}
+      ordersRiskData[o.id] = { score: o.risk_score || 0, reasons };
+    });
     document.getElementById('orders-body').innerHTML = orders.length ? orders.map(o=>`
       <tr class="border-b hover:bg-white hover:bg-opacity-5 transition-colors" style="border-color:rgba(201,168,76,.05);">
         <td class="py-4 pr-6 font-display text-xs text-gray-400">#${o.id}</td>
         <td class="py-4 pr-6 font-serif italic text-xs text-gray-400">${esc(o.user_email)}</td>
         <td class="py-4 pr-6 text-xs text-gray-500 max-w-[200px] truncate">${esc(o.items_summary||'—')}</td>
         <td class="py-4 pr-6 font-display text-sm gold-text">Rs. ${o.total_amount?.toFixed(0)}</td>
-        <td class="py-4 pr-6">${riskBadge(o.risk_score, o.risk_reasons)}</td>
+        <td class="py-4 pr-6">${riskBadge(o.id, o.risk_score)}</td>
         <td class="py-4 pr-6">
           <select onchange="updateOrderStatus(${o.id}, this.value)" style="background:rgba(10,31,26,0.95);border:1px solid rgba(201,168,76,0.3);color:#c9a84c;" class="text-xs rounded-lg px-2 py-1 font-display tracking-wider">
             <option value="pending" ${o.status==='pending'?'selected':''}>PENDING</option>
@@ -458,18 +481,36 @@ async function loadOrders(){
   }catch(e){ console.error('Orders load error:',e); }
 }
 
-// Renders a colored Low/Medium/High risk badge — click it to see why it got that score
-function riskBadge(score, reasonsJson){
+// Stores risk data per order id (populated in loadOrders) and shows it in a themed modal
+function riskBadge(orderId, score){
   score = score || 0;
-  let reasons = [];
-  try{ reasons = JSON.parse(reasonsJson || '[]'); }catch{}
-  const reasonText = reasons.length ? reasons.join('\\n• ') : 'No risk factors detected — looks like a normal order.';
-  const safeReason = esc(reasonText).replace(/'/g,"\\'").replace(/\n/g,'\\n');
   let color, label;
   if(score >= 50){ color = '#ef4444'; label = 'HIGH'; }
   else if(score >= 25){ color = '#eab308'; label = 'MEDIUM'; }
   else { color = '#4ade80'; label = 'LOW'; }
-  return `<span onclick="alert('Risk score: ${score}/100\\n\\n• ${safeReason}')" style="display:inline-block;padding:3px 10px;border-radius:8px;font-size:0.65rem;letter-spacing:0.05em;font-weight:600;background:${color}22;color:${color};border:1px solid ${color}55;cursor:pointer;">${label} (${score})</span>`;
+  return `<span onclick="showRiskDetails(${orderId})" style="display:inline-block;padding:3px 10px;border-radius:8px;font-size:0.65rem;letter-spacing:0.05em;font-weight:600;background:${color}22;color:${color};border:1px solid ${color}55;cursor:pointer;">${label} (${score})</span>`;
+}
+
+function showRiskDetails(orderId){
+  const data = ordersRiskData[orderId] || { score: 0, reasons: [] };
+  let color, label;
+  if(data.score >= 50){ color = '#ef4444'; label = 'HIGH RISK'; }
+  else if(data.score >= 25){ color = '#eab308'; label = 'MEDIUM RISK'; }
+  else { color = '#4ade80'; label = 'LOW RISK'; }
+
+  const badgeEl = document.getElementById('risk-modal-badge');
+  badgeEl.textContent = label;
+  badgeEl.style.background = color + '22';
+  badgeEl.style.color = color;
+  badgeEl.style.border = `1px solid ${color}55`;
+  document.getElementById('risk-modal-score').textContent = `Score: ${data.score}/100`;
+
+  const list = document.getElementById('risk-modal-reasons');
+  list.innerHTML = data.reasons.length
+    ? data.reasons.map(r => `<li class="font-serif text-sm text-gray-400 flex gap-2"><span style="color:${color};">•</span>${esc(r)}</li>`).join('')
+    : `<li class="font-serif text-sm text-gray-500 italic">No risk factors detected — looks like a normal order.</li>`;
+
+  document.getElementById('risk-modal').classList.remove('hidden');
 }
 
 // ── Product Modal
