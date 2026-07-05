@@ -43,7 +43,8 @@ async function verifyJWT(token, secret) {
 const authMiddleware = async (c, next) => {
   const auth = c.req.header('Authorization')
   if (!auth?.startsWith('Bearer ')) return c.json({ error: 'Unauthorized' }, 401)
-  const payload = await verifyJWT(auth.slice(7), c.env.JWT_SECRET || 'elegant-la-vie-super-secret-jwt-key-2024')
+  if (!c.env.JWT_SECRET) return c.json({ error: 'Server misconfigured: JWT_SECRET not set' }, 500)
+  const payload = await verifyJWT(auth.slice(7), c.env.JWT_SECRET)
   if (!payload) return c.json({ error: 'Invalid or expired token' }, 401)
   c.set('user', payload)
   await next()
@@ -66,9 +67,10 @@ app.post('/api/login', async (c) => {
     const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first()
     if (!user) return c.json({ error: 'Invalid credentials' }, 401)
     const hash = await hashPassword(password)
-    const valid = user.password_hash === hash || user.password_hash === password
+    const valid = user.password_hash === hash
     if (!valid) return c.json({ error: 'Invalid credentials' }, 401)
-    const token = await createJWT({ id: user.id, email: user.email, name: user.name, role: user.role }, c.env.JWT_SECRET || 'elegant-la-vie-super-secret-jwt-key-2024')
+    if (!c.env.JWT_SECRET) return c.json({ error: 'Server misconfigured: JWT_SECRET not set' }, 500)
+    const token = await createJWT({ id: user.id, email: user.email, name: user.name, role: user.role }, c.env.JWT_SECRET)
     return c.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } })
   } catch (err) {
     return c.json({ error: 'Login failed', details: err.message }, 500)
@@ -83,7 +85,8 @@ app.post('/api/register', async (c) => {
     if (existing) return c.json({ error: 'Email already registered' }, 409)
     const hash = await hashPassword(password)
     const result = await c.env.DB.prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)').bind(name, email, hash, 'customer').run()
-    const token = await createJWT({ id: result.meta.last_row_id, email, name, role: 'customer' }, c.env.JWT_SECRET || 'elegant-la-vie-super-secret-jwt-key-2024')
+    if (!c.env.JWT_SECRET) return c.json({ error: 'Server misconfigured: JWT_SECRET not set' }, 500)
+    const token = await createJWT({ id: result.meta.last_row_id, email, name, role: 'customer' }, c.env.JWT_SECRET)
     return c.json({ token, user: { id: result.meta.last_row_id, name, email, role: 'customer' } }, 201)
   } catch (err) {
     return c.json({ error: 'Registration failed', details: err.message }, 500)
@@ -96,7 +99,7 @@ app.post('/api/admin/change-credentials', adminMiddleware, async (c) => {
     const user_id = c.get('user').id
     const user = await c.env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(user_id).first()
     const hash = await hashPassword(current_password)
-    if (user.password_hash !== hash && user.password_hash !== current_password) return c.json({ error: 'Current password is incorrect' }, 401)
+    if (user.password_hash !== hash) return c.json({ error: 'Current password is incorrect' }, 401)
     if (new_email) await c.env.DB.prepare('UPDATE users SET email = ? WHERE id = ?').bind(new_email, user_id).run()
     if (new_password) await c.env.DB.prepare('UPDATE users SET password_hash = ? WHERE id = ?').bind(await hashPassword(new_password), user_id).run()
     return c.json({ success: true, message: 'Credentials updated. Please login again.' })
