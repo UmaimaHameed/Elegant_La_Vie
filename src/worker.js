@@ -40,6 +40,55 @@ async function verifyJWT(token, secret) {
   } catch { return null }
 }
 
+// COD FRAUD RISK SCORING — rule-based, no external API needed.
+// Looks at phone format, past cancelled orders, address quality, name patterns,
+// order size vs history, and order frequency to flag risky COD orders for the admin.
+async function calculateRiskScore(c, { phone, address, full_name, total }) {
+  let score = 0
+  const reasons = []
+
+  const digits = (phone || '').replace(/\D/g, '')
+  const validPkPhone = /^(0092|92|0)?3\d{9}$/.test(digits)
+  if (!validPkPhone) { score += 25; reasons.push('Phone number format looks invalid') }
+
+  try {
+    const cancelled = await c.env.DB.prepare(
+      "SELECT COUNT(*) as count FROM orders WHERE phone = ? AND status = 'cancelled'"
+    ).bind(phone).first()
+    if (cancelled?.count >= 2) { score += 40; reasons.push(`${cancelled.count} previous cancelled orders from this number`) }
+    else if (cancelled?.count === 1) { score += 20; reasons.push('1 previous cancelled order from this number') }
+  } catch {}
+
+  if (!address || address.trim().length < 10) { score += 15; reasons.push('Address is too short / incomplete') }
+  else if (!/\d/.test(address)) { score += 10; reasons.push('Address has no house/street number') }
+
+  const nameCheck = (full_name || '').toLowerCase()
+  if (/\btest\b|asdf|xxx|abc123/.test(nameCheck) || /(.)\1{3,}/.test(nameCheck) || nameCheck.trim().length < 3) {
+    score += 20; reasons.push('Name looks like a test/fake entry')
+  }
+
+  try {
+    const delivered = await c.env.DB.prepare(
+      "SELECT COUNT(*) as count FROM orders WHERE phone = ? AND status = 'delivered'"
+    ).bind(phone).first()
+    const avg = await c.env.DB.prepare("SELECT AVG(total_amount) as avg FROM orders WHERE status != 'cancelled'").first()
+    if (delivered?.count === 0 && avg?.avg && total > avg.avg * 3) {
+      score += 15; reasons.push('Unusually high order value for a first-time customer')
+    }
+  } catch {}
+
+  try {
+    const recent = await c.env.DB.prepare(
+      "SELECT COUNT(*) as count FROM orders WHERE phone = ? AND created_at >= datetime('now', '-10 minutes')"
+    ).bind(phone).first()
+    if (recent?.count >= 1) { score += 20; reasons.push('Multiple orders placed in a short time from this number') }
+  } catch {}
+
+  score = Math.min(score, 100)
+  const level = score >= 50 ? 'high' : score >= 25 ? 'medium' : 'low'
+  return { score, level, reasons }
+}
+
 const authMiddleware = async (c, next) => {
   const auth = c.req.header('Authorization')
   if (!auth?.startsWith('Bearer ')) return c.json({ error: 'Unauthorized' }, 401)
@@ -203,9 +252,10 @@ app.post('/api/checkout', authMiddleware, async (c) => {
     }
 
     const items_summary = items.map(i => `${i.name} x${i.quantity}`).join(', ')
+    const risk = await calculateRiskScore(c, { phone, address, full_name, total })
     const order = await c.env.DB.prepare(
-      'INSERT INTO orders (user_email, full_name, phone, address, total_amount, status, payment_method, gift_message, items_summary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    ).bind(user.email, full_name, phone, address, total, 'pending', payment_method||'cod', gift_message||null, items_summary).run()
+      'INSERT INTO orders (user_email, full_name, phone, address, total_amount, status, payment_method, gift_message, items_summary, risk_score, risk_reasons) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ).bind(user.email, full_name, phone, address, total, 'pending', payment_method||'cod', gift_message||null, items_summary, risk.score, JSON.stringify(risk.reasons)).run()
 
     const order_id = order.meta.last_row_id
     for (const item of items) {
