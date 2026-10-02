@@ -50,7 +50,7 @@ CREATE TABLE order_items (
 
 -- Seed admin user (password: admin123)
 INSERT INTO users (name, email, password_hash, role) VALUES
-('Kaleem Ullah', 'admin@elegantlavie.com', '$2a$10$rRJkMu0HCzsMq7UaRFKLaOBv5dxZ4A5k9V2Lm3X7NqwP8cYe1tGiC', 'admin');
+('Umiama Hmaeed', 'bsai25108143@szabist.pk', '$2a$10$rRJkMu0HCzsMq7UaRFKLaOBv5dxZ4A5k9V2Lm3X7NqwP8cYe1tGiC', 'admin');
 
 -- Seed perfume products
 INSERT INTO products (name, description, price, image, scent_mood, scent_notes, featured) VALUES
